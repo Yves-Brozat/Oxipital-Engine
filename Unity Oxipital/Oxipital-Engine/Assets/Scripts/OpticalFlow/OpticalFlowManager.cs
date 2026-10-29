@@ -48,6 +48,7 @@ namespace Oxipital
 
         bool allocated;
         bool warnedMissingShaders;
+        int inputRevision;
 
         public OpticalFlowSource Source => source;
         public OpticalFlowCompute Compute => compute;
@@ -67,6 +68,7 @@ namespace Oxipital
         void OnDisable()
         {
             ReleaseAll();
+            if (source != null) source.SetSpoutActive(false);
         }
 
         void Update()
@@ -74,22 +76,25 @@ namespace Oxipital
             ApplyPlaneScale();
             if (!HasShaders()) return;
 
-            // Working resolution follows the Spout sender texture (textures rebuilt when it changes)
+            // Spout uses its sender size; webcam/video use their configured processing resolution.
             source.UpdateReceivedSize();
             int w = Mathf.Max(source.DesiredSize.x, 16);
             int h = Mathf.Max(source.DesiredSize.y, 16);
-            if (allocated && w == source.Width && h == source.Height) return;
+            if (allocated && w == source.Width && h == source.Height && inputRevision == source.InputRevision) return;
 
             ReleaseAll();
             source.Allocate(w, h);
             compute.Allocate(w, h);
             processor.Allocate(w, h);
             allocated = true;
+            inputRevision = source.InputRevision;
         }
 
         void LateUpdate()
         {
-            if (!allocated) return;
+            // VideoPlayer may deliver its first frame after Update; rebuild history on
+            // the next Update before processing that new source.
+            if (!allocated || inputRevision != source.InputRevision) return;
 
             source.Execute();
             compute.Execute(source);

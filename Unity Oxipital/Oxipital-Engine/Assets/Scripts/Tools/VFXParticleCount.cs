@@ -18,7 +18,7 @@ public class VFXParticleCount : MonoBehaviour
             foreach(VisualEffect vfx in vfxList)
             {
                 if(vfx != null)
-                    totalCount += vfx.aliveParticleCount;
+                    totalCount += Mathf.Max(0, vfx.aliveParticleCount);
             }
         }
         aliveParticleCount = totalCount;

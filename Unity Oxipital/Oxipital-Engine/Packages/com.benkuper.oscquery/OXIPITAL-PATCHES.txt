@@ -1,0 +1,13 @@
+Embedded from com.benkuper.oscquery 1.2.4.
+
+Runtime/OSCQuery.cs: Convert boxed floating-point values through Convert.ToSingle
+when building the query tree. A boxed double (including VideoPlayer.time) cannot
+be directly unboxed as float. The exception prevented initialization from
+completing and caused another full rebuild on every frame.
+
+Keep this correction when upgrading the package.
+
+Incoming numeric values are converted to the declared field/property type rather
+than unboxing all integers as Int32 and all floating values as Single. This also
+supports float-valued Chataigne mappings targeting Unity integer parameters.
+RGBA input reads alpha from the fourth OSC argument instead of reusing blue.

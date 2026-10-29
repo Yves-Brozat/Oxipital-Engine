@@ -67,6 +67,32 @@ Orbs are the heart of Oxipital's particle system:
 - **Emission shapes** - Multiple available geometries (sphere, cube, cylinder, etc.)
 - **Presets** - Save and load system (beta feature)
 
+#### Particle Render Types
+
+Set **Render Type** on an Orb Group to switch between `UnlitOpaque`, `UnlitAdditive`,
+`LitQuad`, `LitMesh`, and `LitSphere`. The original enum values remain unchanged for
+existing presets and OSC controls. Lit modes respond to HDRP scene lighting.
+
+`LitMesh` uses **Particle Mesh**, independently of the emitter shape; an empty field
+uses Unity's built-in sphere mesh. `LitSphere` uses HDRP's native sphere impostor
+(quad geometry with sphere shading and depth), reducing geometry cost. This native
+output is opaque: it does not provide transparent alpha fading. Lit Quad and Mesh
+use opaque rendering with alpha clipping. Lit outputs receive shadows but do not
+cast them by default.
+
+OrbVFX keeps one shared simulation with a separate output for each mode. The common
+output subgraph reads the current render type from Orb Buffer slot 24 and filters
+particles locally, so changing modes does not reset particle positions or lifetime.
+Indirect Draw and Compute Culling compact the surviving particles before drawing.
+Each output still incurs filtering and buffer overhead; profile the actual scene
+to compare costs. Swapping graph assets would require reinitializing the simulation.
+
+To check in Unity, emit particles under an HDRP light and cycle through all five
+modes while they are alive, including Infinite Life. Check that Lit modes respond
+to the light, that Particle Mesh changes only the rendered geometry, and that
+clearing Particle Mesh restores the sphere. Use the GPU Profiler to check output
+update and draw costs at the intended particle count.
+
 #### Macro System
 - **Grouped control** - One macro can control multiple parameters simultaneously
 - **MIDI compatibility** - Connection with MIDI controllers

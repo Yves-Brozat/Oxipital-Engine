@@ -1,0 +1,11 @@
+Embedded from jp.keijiro.klak.spout 2.0.6. Native binaries are unchanged.
+
+Runtime/SpoutReceiver.cs: Poll a shared sender-name cache twice per second; do not
+create receivers for absent sources. Release the receiver when its sender leaves.
+
+Runtime/Internal/Receiver.cs: Back off native open attempts while no shared texture
+is available (0.25 seconds increasing to 2 seconds). Successful reception returns
+to one update per frame. Invalid external handles remain genuine connection
+errors; they no longer trigger a native open on every rendered frame.
+
+Keep these corrections when upgrading the package.

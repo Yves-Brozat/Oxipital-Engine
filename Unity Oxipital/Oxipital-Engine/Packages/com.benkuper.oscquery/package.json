@@ -1,0 +1,18 @@
+{
+  "author": "Ben Kuper",
+  "description": "Seamless OSCQuery integration in Unity.",
+  "displayName": "OSCQuery",
+  "keywords": [
+    "unity"
+  ],
+  "license": "GPL v3",
+  "name": "com.benkuper.oscquery",
+  "repository": "github:benkper/Unity-OSCQuery",
+  "unity": "2023.2",
+  "unityRelease": "20f1",
+  "version": "1.2.4",
+  "publishConfig": {
+    "registry": "https://package.openupm.com"
+  },
+  "_fingerprint": "e389a8d7cf1368fa51b29c64b57cc2643b4e9508"
+}

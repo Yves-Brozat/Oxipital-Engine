@@ -1,11 +1,10 @@
 {
   "dependencies": {
     "com.benkuper.oscquery": {
-      "version": "1.2.4",
+      "version": "file:com.benkuper.oscquery",
       "depth": 0,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://package.openupm.com"
+      "source": "embedded",
+      "dependencies": {}
     },
     "com.pfc.dome-tools": {
       "version": "0.8.1",
@@ -302,13 +301,12 @@
       "url": "https://registry.npmjs.com"
     },
     "jp.keijiro.klak.spout": {
-      "version": "2.0.6",
+      "version": "file:jp.keijiro.klak.spout",
       "depth": 0,
-      "source": "registry",
+      "source": "embedded",
       "dependencies": {
         "com.unity.modules.screencapture": "1.0.0"
-      },
-      "url": "https://registry.npmjs.com"
+      }
     },
     "jp.keijiro.klak.syphon": {
       "version": "1.0.4",

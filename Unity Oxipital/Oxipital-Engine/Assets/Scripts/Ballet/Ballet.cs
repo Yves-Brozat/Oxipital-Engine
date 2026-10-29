@@ -35,7 +35,8 @@ namespace Oxipital
             {
                 group.setForceBuffers(forceBuffers);
                 if (opticalFlow != null) group.setOpticalFlow(opticalFlow);
-                totalParticles += group.vfx.aliveParticleCount;
+                // Unity can report a negative count while VFX runtime data is unavailable.
+                totalParticles += Mathf.Max(0, group.vfx.aliveParticleCount);
             }
         }
     }

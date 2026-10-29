@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Oxipital
 {
-    // Input stage : receives the TouchDesigner stream (Spout "OxipitalFlow") or the test source,
+    // Input stage : receives Spout, webcam, video, a webcam/video blend or the test source,
     // brings it to the working resolution / orientation and detects new camera frames on the GPU.
     //
     // Spout contract (RGBA 16 bit float) :
@@ -12,13 +12,16 @@ namespace Oxipital
     //   SpoutMaskComputeInUnity  : R = luminance / body mask, A = normalized depth
     public class OpticalFlowSource : MonoBehaviour
     {
-        public enum FlowSourceMode { SpoutFlow, SpoutMaskComputeInUnity }
+        // Preserve the serialized Spout values used by scenes and OSC.
+        public enum FlowSourceMode { SpoutFlow, SpoutMaskComputeInUnity, Webcam, Video, Blend }
         public enum ChangeDetection { GPUDiff, EveryFrame, FixedRate }
 
         [Header("Input")]
         public FlowSourceMode mode = FlowSourceMode.SpoutMaskComputeInUnity;
         public string spoutName = "OxipitalFlow";
         public bool useTestSource = false;
+        [OSCQuery.DoNotExpose]
+        public OpticalFlowVideoInput videoInput;
 
         [Header("Orientation")]
         public bool mirror = false;
@@ -58,6 +61,34 @@ namespace Oxipital
         float fixedRateTimer;
 
         int kCopy, kDetect, kCommit;
+        bool seedHistory;
+        SpoutReceiver suspendedReceiver;
+
+        // Suspend only a receiver that was enabled, so manually disabled
+        // receivers stay disabled when switching back from webcam/video.
+        internal void SetSpoutActive(bool active)
+        {
+            if (suspendedReceiver != null && suspendedReceiver != receiver)
+            {
+                suspendedReceiver.enabled = true;
+                suspendedReceiver = null;
+            }
+            if (receiver == null) return;
+            if (active)
+            {
+                receiver.sourceName = spoutName;
+                if (suspendedReceiver == receiver)
+                {
+                    receiver.enabled = true;
+                    suspendedReceiver = null;
+                }
+            }
+            else if (receiver.enabled)
+            {
+                receiver.enabled = false;
+                suspendedReceiver = receiver;
+            }
+        }
 
         // The working resolution follows the Spout sender texture. This default is only used
         // until a sender has been received (and by the test source when nothing was ever received).
@@ -81,6 +112,9 @@ namespace Oxipital
         public int Width { get; private set; }
         public int Height { get; private set; }
         public bool IsFlowMode => mode == FlowSourceMode.SpoutFlow;
+        public bool IsVideoInput => mode == FlowSourceMode.Webcam || mode == FlowSourceMode.Video || mode == FlowSourceMode.Blend;
+        internal int InputRevision => ((int)mode * 397) ^ (useTestSource ? 131 : 0) ^
+            (IsVideoInput && videoInput != null ? videoInput.Revision * 7919 : 0);
         public Vector2 FlowSign => new Vector2(invertX ? -1 : 1, invertY ? -1 : 1);
         public Vector4 MaskChannel => IsFlowMode ? new Vector4(0, 0, 1, 0) : new Vector4(1, 0, 0, 0);
 
@@ -95,6 +129,7 @@ namespace Oxipital
 
             state = new GraphicsBuffer(GraphicsBuffer.Target.Structured, 4, sizeof(float));
             state.SetData(new float[] { 1, 0, 0, 0 });
+            seedHistory = true;
 
             kCopy = shader.FindKernel("Copy");
             kDetect = shader.FindKernel("DetectChange");
@@ -120,6 +155,12 @@ namespace Oxipital
             {
                 source = testSource.Render(this);
             }
+            else if (IsVideoInput)
+            {
+                if (receiver != null && receiver.targetTexture == input) receiver.targetTexture = null;
+                if (videoInput != null && videoInput.isActiveAndEnabled) videoInput.Render(shader, input, mode);
+                else OpticalFlowUtil.Clear(input);
+            }
             else if (receiver != null)
             {
                 // Receiving into our own RGBAHalf texture : KlakSpout's internal buffer is 8 bit
@@ -139,6 +180,13 @@ namespace Oxipital
             shader.SetTexture(kCopy, FlowIDs.Current, current);
             OpticalFlowUtil.Dispatch(shader, kCopy, Width, Height);
 
+            // A new source has no previous camera frame; do not interpret its first image as motion.
+            if (seedHistory)
+            {
+                Graphics.CopyTexture(current, previous);
+                seedHistory = false;
+            }
+
             // New frame detection
             shader.SetFloat(FlowIDs.ForceChange, GetForcedChange());
             shader.SetFloat(FlowIDs.ChangeThreshold, changeThreshold);
@@ -153,6 +201,15 @@ namespace Oxipital
         // Keeps the last known size while no sender is connected.
         internal void UpdateReceivedSize()
         {
+            SetSpoutActive(!useTestSource && !IsVideoInput);
+            if (IsVideoInput && !useTestSource)
+            {
+                if (videoInput == null) videoInput = GetComponent<OpticalFlowVideoInput>();
+                if (videoInput == null) videoInput = gameObject.AddComponent<OpticalFlowVideoInput>();
+                videoInput.PrepareInput(mode);
+                receivedSize = videoInput.WorkingSize(mode);
+                return;
+            }
             if (useTestSource || receiver == null || nativeReceiverField == null) return;
 
             object nativeReceiver = nativeReceiverField.GetValue(receiver);

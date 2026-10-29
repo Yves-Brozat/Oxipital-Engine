@@ -13,6 +13,7 @@
 #pragma kernel DetectChange
 #pragma kernel Commit
 #pragma kernel TestDisc
+#pragma kernel VideoInput
 
 SamplerState sampler_linear_clamp;
 
@@ -23,6 +24,12 @@ Texture2D<float4> _Previous;
 RWTexture2D<float4> _PreviousOut;
 RWStructuredBuffer<float> _State;
 RWTexture2D<float4> _TestOut;
+Texture2D<float4> _Webcam;
+Texture2D<float4> _Video;
+RWTexture2D<float4> _VideoOut;
+float4 _WebcamInfo; // oriented aspect, quarter turns clockwise, vertical flip, available
+float4 _VideoInfo;
+float _VideoBlend;
 
 int2 _Size;
 float4 _Crop;         // uv rect : xy = min, zw = max
@@ -41,6 +48,39 @@ float _TestFlowMode;  // 1 = write a flow (SpoutFlow contract), 0 = write a mask
 bool OutOfBounds(uint2 id)
 {
     return any((int2)id >= _Size);
+}
+
+// Fit each source into the working frame without stretching. Undo the display
+// rotation when mapping output UVs back into the camera's raw pixels.
+float2 VideoUV(float2 uv, float4 info, out float inside)
+{
+    float aspect = (float)_Size.x / _Size.y;
+    float2 p = uv - 0.5;
+    if (info.x > aspect) p.y *= info.x / aspect;
+    else p.x *= aspect / max(info.x, 0.0001);
+    inside = all(abs(p) <= 0.5) ? info.w : 0;
+    int turns = (int)info.y;
+    if (turns == 1) p = float2(-p.y, p.x);
+    else if (turns == 2) p = -p;
+    else if (turns == 3) p = float2(p.y, -p.x);
+    uv = p + 0.5;
+    if (info.z > 0.5) uv.y = 1 - uv.y;
+    return uv;
+}
+
+[numthreads(8, 8, 1)]
+void VideoInput(uint3 id : SV_DispatchThreadID)
+{
+    if (OutOfBounds(id.xy)) return;
+    float2 uv = (id.xy + 0.5) / (float2)_Size;
+    float cameraInside, videoInside;
+    float2 cameraUV = VideoUV(uv, _WebcamInfo, cameraInside);
+    float2 videoUV = VideoUV(uv, _VideoInfo, videoInside);
+    float3 camera = _Webcam.SampleLevel(sampler_linear_clamp, cameraUV, 0).rgb * cameraInside;
+    float3 video = _Video.SampleLevel(sampler_linear_clamp, videoUV, 0).rgb * videoInside;
+    float luminance = dot(lerp(camera, video, _VideoBlend), float3(0.2126, 0.7152, 0.0722));
+    // Existing flow algorithms consume R as luminance; these sources have no depth.
+    _VideoOut[id.xy] = float4(luminance.xxx, 0.5);
 }
 
 [numthreads(8, 8, 1)]

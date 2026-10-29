@@ -174,7 +174,8 @@ namespace Oxipital
         public float infiniteCount = 0; // infinite particles spawned and kept (particles with infiniteRank > infiniteCount are killed)
 
         public enum EmitterShape { Sphere, Plane, Torus, Cube, Pipe, Egg, Line, Circle, Merkaba, Pyramid, Custom, Augmenta }
-        public enum RenderType { UnlitOpaque, UnlitAdditive, LitQuad, LitMesh }
+        // Values are serialized in presets and sent to the VFX through buffer slot 24.
+        public enum RenderType { UnlitOpaque = 0, UnlitAdditive = 1, LitQuad = 2, LitMesh = 3, LitSphere = 4 }
 
         [InBuffer(3)]
         public EmitterShape emitterShape;
@@ -257,6 +258,14 @@ namespace Oxipital
 
         [InBuffer(24)]
         public RenderType renderType = RenderType.UnlitAdditive;
+
+        [Tooltip("Geometry used by LitMesh particles, independently of the emitter shape. Leave empty for a sphere. LitSphere uses a cheaper opaque sphere impostor instead.")]
+        [OSCQuery.DoNotExpose]
+        public Mesh particleMesh;
+
+        Mesh lastParticleMesh;
+        bool particleMeshInitialized;
+        static readonly int particleMeshID = Shader.PropertyToID("Particle Mesh");
 
         [InBuffer(25)]
         [Range(0, 1)]
@@ -345,9 +354,13 @@ namespace Oxipital
             base.OnEnable();
             MeshLoader.loadMeshes();
             vfx = GetComponent<VisualEffect>();
+            particleMeshInitialized = false;
+            updateParticleMesh();
             infiniteSpawnAttribute = vfx.CreateVFXEventAttribute();
             spawnerState = new VFXSpawnerState();
             infiniteCount = 0;
+            recentSpawns.Clear();
+            recentSpawnCount = 0;
             // pclGraphics = GetComponent<PCLToGraphicsBuffer>();
             textureLoaded = false;
 			spoutTexture2D = new Texture2D(spoutTexture.width, spoutTexture.height, TextureFormat.RGBAFloat, false);
@@ -356,8 +369,10 @@ namespace Oxipital
         protected override void OnDisable()
         {
             base.OnDisable();
-            spawnerState.Dispose();
-            infiniteSpawnAttribute.Dispose();
+            spawnerState?.Dispose();
+            spawnerState = null;
+            infiniteSpawnAttribute?.Dispose();
+            infiniteSpawnAttribute = null;
         }
 
         protected override void Update()
@@ -366,6 +381,8 @@ namespace Oxipital
             updateInfiniteLife();
 
             base.Update();
+
+            updateParticleMesh();
 
             colorOverLife = CreateGradient(color, colorLife, 0, 1, 0, colorLifeRange);
             colorOverSpeed = CreateGradient(Color.black, colorSpeed, 1, 1, (1-colorSpeedRange), 1);
@@ -508,10 +525,26 @@ namespace Oxipital
 
         }
 
+        void updateParticleMesh()
+        {
+            if ((particleMeshInitialized && particleMesh == lastParticleMesh) || !vfx.HasMesh(particleMeshID)) return;
+
+            if (particleMesh != null) vfx.SetMesh(particleMeshID, particleMesh);
+            else vfx.ResetOverride(particleMeshID);
+            lastParticleMesh = particleMesh;
+            particleMeshInitialized = true;
+        }
+
         // Infinite particles are ranked 1..infiniteCount in the VFX (InfiniteLifeInit/Update.hlsl).
         // Growing the count spawns the missing ranks, shrinking it kills the ranks above the count.
         void updateInfiniteLife()
         {
+            // A graph can exist before its runtime systems have been initialized.
+            // Reading spawnCount from an uninitialized state crashes inside Unity's
+            // native GetSpawnCount rather than throwing a managed exception.
+            if (vfx == null || !vfx.isActiveAndEnabled || spawnerState == null ||
+                !vfx.HasSystem(spawnSystemID) || !vfx.HasSystem(orbSystemID)) return;
+
             int target = infiniteLife ? Mathf.RoundToInt(dancerIntensity * maxInfiniteParticles) : 0;
 
             infiniteCount = Mathf.Min(infiniteCount, target);
@@ -521,6 +554,7 @@ namespace Oxipital
             // (e.g. finite particles still fading out after switching to infinite life). The rest comes on the next frames.
             while (recentSpawns.Count > 0 && Time.time - recentSpawns.Peek().time > SPAWN_READBACK_DELAY) recentSpawnCount -= recentSpawns.Dequeue().count;
             vfx.GetSpawnSystemInfo(spawnSystemID, spawnerState);
+            if (spawnerState.totalTime <= 0) return;
             addRecentSpawn((int)spawnerState.spawnCount);
 
             VFXParticleSystemInfo info = vfx.GetParticleSystemInfo(orbSystemID);
