@@ -79,7 +79,8 @@ var forceGroupParameters = {
 		"Axial Amplitude Wave": { "type": "float", "default": 0, "min": 0, "max": 1 }
 	},
 	"Linear": {
-		"Linear Intensity": { "type": "float", "default": 0, "min": 0, "max": 1 }
+		"Linear Intensity": { "type": "float", "default": 0, "min": 0, "max": 1 },
+		"Linear Direction": { "type": "p3d", "default": [0, 0, 0] }
 	},
 	"Orthoradial": {
 		"Ortho Intensity": { "type": "float", "default": 0, "min": 0, "max": 1 },
@@ -434,6 +435,18 @@ function createItem(index, group, parameters, prefix) {
 	return item;
 }
 
+// Chataigne's addPoint3DParameter only accepts name and description.
+// Set new values explicitly; keep values restored from a saved session.
+function addPoint3DBaseValue(container, initialValue) {
+	var existing = container.getControllables();
+	for (var i = 0; i < existing.length; i++) {
+		if (existing[i].name == "baseValue") return existing[i];
+	}
+	var point = container.addPoint3DParameter("Base Value", "Base value for this parameter");
+	point.set(initialValue);
+	return point;
+}
+
 function addParametersToItem(item, parameters) {
 	var paramGroupProps = util.getObjectProperties(parameters);
 	for (var i = 0; i < paramGroupProps.length; i++) {
@@ -460,7 +473,7 @@ function addParametersToItem(item, parameters) {
 				else if (paramMin != null) paramContainer.addIntParameter("Base Value", "Base value for this parameter", paramDefault, paramMin);
 				else paramContainer.addIntParameter("Base Value", "Base value for this parameter", paramDefault);
 			} else if (paramType == "p3d") {
-				paramContainer.addPoint3DParameter("Base Value", "Base value for this parameter", paramDefault);
+				addPoint3DBaseValue(paramContainer, paramDefault);
 			} else if (paramType == "color") {
 				paramContainer.addColorParameter("Base Value", "Base value for this parameter", paramDefault);
 			} else if (paramType == "enum") {

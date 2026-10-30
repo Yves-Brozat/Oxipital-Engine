@@ -24,9 +24,13 @@ namespace Oxipital
         public OpticalFlowVideoInput videoInput;
 
         [Header("Orientation")]
+        [InspectorName("Flip X (Mirror)"), Tooltip("Mirror the input image horizontally, including the flow and its aligned debug views.")]
         public bool mirror = false;
+        [Tooltip("Flip the input image vertically, including the flow and its aligned debug views.")]
         public bool flipY = false;
+        [Tooltip("Reverse the horizontal flow force without mirroring the input image.")]
         public bool invertX = false;
+        [Tooltip("Reverse the vertical flow force without flipping the input image.")]
         public bool invertY = false;
         [Range(0, .45f)]
         public float cropLeft = 0;
@@ -62,6 +66,8 @@ namespace Oxipital
 
         int kCopy, kDetect, kCommit;
         bool seedHistory;
+        Vector4 previousCrop;
+        Vector2 previousFlipSign;
         SpoutReceiver suspendedReceiver;
 
         // Suspend only a receiver that was enabled, so manually disabled
@@ -173,7 +179,13 @@ namespace Oxipital
 
             // Copy with crop / mirror / flip
             Vector2 flipSign = new Vector2(mirror ? -1 : 1, flipY ? -1 : 1);
-            shader.SetVector(FlowIDs.Crop, new Vector4(cropLeft, cropBottom, 1 - cropRight, 1 - cropTop));
+            Vector4 crop = new Vector4(cropLeft, cropBottom, 1 - cropRight, 1 - cropTop);
+            // A change of framing is not camera motion. Restart the frame comparison
+            // so toggling a flip does not create a full-frame impulse.
+            if (crop != previousCrop || flipSign != previousFlipSign) seedHistory = true;
+            previousCrop = crop;
+            previousFlipSign = flipSign;
+            shader.SetVector(FlowIDs.Crop, crop);
             shader.SetVector(FlowIDs.FlipSign, flipSign);
             shader.SetFloat(FlowIDs.FlowInRG, IsFlowMode ? 1 : 0);
             shader.SetTexture(kCopy, FlowIDs.Input, source);

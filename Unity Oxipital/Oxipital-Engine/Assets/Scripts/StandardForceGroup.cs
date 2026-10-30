@@ -69,6 +69,10 @@ namespace Oxipital
         [InBuffer(17)]
         public float linearIntensity;
 
+        [Tooltip("World-space direction, normalized independently of Linear Intensity. Zero keeps the dancer's forward direction.")]
+        [InBuffer(43)]
+        public Vector3 linearDirection = Vector3.zero;
+
 
         [Header("Orthoradial")]
         [Range(0, 1)]

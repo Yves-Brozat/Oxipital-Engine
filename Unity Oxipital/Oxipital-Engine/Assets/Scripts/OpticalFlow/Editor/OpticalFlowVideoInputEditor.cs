@@ -66,9 +66,13 @@ namespace Oxipital.Editor
             EditorGUILayout.HelpBox(input.Status, MessageType.Info);
             if (!string.IsNullOrEmpty(input.LastRecordingPath))
                 EditorGUILayout.SelectableLabel(input.LastRecordingPath, EditorStyles.wordWrappedLabel, GUILayout.Height(40));
-            Texture preview = input.WebcamTexture;
+            // Reuse the actual processed frame: camera rotation, crop and user flips
+            // are already applied, including when video and webcam are blended.
+            bool alignedPreview = Application.isPlaying && source != null && source.IsVideoInput && source.Current != null;
+            Texture preview = alignedPreview ? source.Current : input.WebcamTexture;
             if (preview != null)
             {
+                EditorGUILayout.LabelField(alignedPreview ? "Input Preview (Crop / Flip Applied)" : "Raw Webcam Preview");
                 Rect rect = GUILayoutUtility.GetAspectRect((float)preview.width / preview.height);
                 EditorGUI.DrawPreviewTexture(rect, preview, null, ScaleMode.ScaleToFit);
             }

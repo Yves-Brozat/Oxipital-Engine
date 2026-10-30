@@ -1588,6 +1588,43 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 627463136}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!84 &628583177
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 6
+  m_Width: 1920
+  m_Height: 1080
+  m_AntiAliasing: 1
+  m_MipCount: -1
+  m_DepthStencilFormat: 90
+  m_ColorFormat: 4
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 1
+  m_UseDynamicScale: 0
+  m_UseDynamicScaleExplicit: 0
+  m_BindMS: 0
+  m_EnableCompatibleFormat: 1
+  m_EnableRandomWrite: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+  m_ShadowSamplingMode: 2
 --- !u!1 &664430384
 GameObject:
   m_ObjectHideFlags: 0
@@ -3547,7 +3584,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4.8301888, y: 4, z: 1}
+  m_LocalScale: {x: 7.245283, y: 6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1480724087}
@@ -4095,7 +4132,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 15671
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 1554993954}
+  m_TargetTexture: {fileID: 628583177}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
@@ -4327,6 +4364,7 @@ GameObject:
   - component: {fileID: 1480724090}
   - component: {fileID: 1480724089}
   - component: {fileID: 1480724088}
+  - component: {fileID: 1480724096}
   m_Layer: 0
   m_Name: Optical Flow
   m_TagString: Untagged
@@ -4380,10 +4418,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32728749ec1be524bb1c60462cda0fc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowDebugView
-  view: 0
+  view: 1
   gain: 1
   displayWidth: 320
   planeView: 1
+  followInputOrientation: 1
   planeOpacity: 0.8
   planeBrightness: 1
   target: {fileID: 0}
@@ -4428,7 +4467,7 @@ MonoBehaviour:
   windBlend: 0.437
   windSpeed: 5.63
   windDrag: 6.89
-  planeScale: 4
+  planeScale: 6
   plane: {fileID: 1341756925}
 --- !u!114 &1480724092
 MonoBehaviour:
@@ -4483,10 +4522,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ec3f014c43e98b43be7fb1464d8b0ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowSource
-  mode: 1
+  mode: 2
   spoutName: OxipitalFlow
   useTestSource: 0
-  videoInput: {fileID: 0}
+  videoInput: {fileID: 1480724096}
   mirror: 0
   flipY: 0
   invertX: 0
@@ -4519,6 +4558,34 @@ MonoBehaviour:
   _targetRenderer: {fileID: 0}
   _targetMaterialProperty: 
   _resources: {fileID: 11400000, guid: f449ebbe2051c2e4d993eaa773a410de, type: 2}
+--- !u!114 &1480724096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1480724086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b02ce7ea399e4e4d9debceba209d8b20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowVideoInput
+  deviceName: Camera (NVIDIA Broadcast)
+  cameraWidth: 1280
+  cameraHeight: 720
+  cameraFrameRate: 30
+  clip: {fileID: 0}
+  videoPath: 
+  loop: 1
+  playbackSpeed: 1
+  videoBlend: 0.5
+  processingWidth: 320
+  recordingFrameRate: 15
+  jpegQuality: 85
+  maxRecordingSeconds: 120
+  playRecordingOnStop: 1
+  showControls: 0
+  lastRecordingPath: 
 --- !u!1 &1487749451
 GameObject:
   m_ObjectHideFlags: 0
@@ -4744,43 +4811,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1491886275}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!84 &1554993954
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_IsAlphaChannelOptional: 0
-  serializedVersion: 6
-  m_Width: 1920
-  m_Height: 1080
-  m_AntiAliasing: 1
-  m_MipCount: -1
-  m_DepthStencilFormat: 90
-  m_ColorFormat: 4
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 1
-  m_UseDynamicScale: 0
-  m_UseDynamicScaleExplicit: 0
-  m_BindMS: 0
-  m_EnableCompatibleFormat: 1
-  m_EnableRandomWrite: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
-  m_ShadowSamplingMode: 2
 --- !u!1 &1575622342
 GameObject:
   m_ObjectHideFlags: 0
@@ -5201,7 +5231,7 @@ MonoBehaviour:
   _keepAlpha: 0
   _captureMethod: 2
   _sourceCamera: {fileID: 0}
-  _sourceTexture: {fileID: 1554993954}
+  _sourceTexture: {fileID: 628583177}
   _resources: {fileID: 11400000, guid: f449ebbe2051c2e4d993eaa773a410de, type: 2}
 --- !u!114 &1783646959
 MonoBehaviour:
@@ -6445,7 +6475,7 @@ MonoBehaviour:
   postProcessWeight: 1
   outdoorScene: {fileID: 462323271}
   outdoorWeight: 0
-  skyboxExposure: 10
+  skyboxExposure: 0
   bloomIntensity: 0.5
   lensFlareIntensity: 0
 --- !u!1660057539 &9223372036854775807

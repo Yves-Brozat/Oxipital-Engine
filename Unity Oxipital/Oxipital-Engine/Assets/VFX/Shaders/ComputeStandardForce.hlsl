@@ -28,6 +28,11 @@ void StandardForce(inout VFXAttributes attributes, in StructuredBuffer<float> bu
 
     // Linear Force is attracting towards the same direction
     float linearForceIntensity = GetFloat(17);
+    float3 linearDirection = GetVector(43);
+    float linearDirectionLengthSq = dot(linearDirection, linearDirection);
+    // Zero preserves the dancer axis used by existing scenes and presets.
+    bool hasLinearDirection = linearDirectionLengthSq > 1e-12;
+    float3 normalizedLinearDirection = linearDirection * rsqrt(max(linearDirectionLengthSq, 1e-12));
 
     // Orthoradial Force is pushing particle on the orthogonal vector of the center vector
     float orthoIntensity = GetFloat(18);
@@ -80,6 +85,7 @@ void StandardForce(inout VFXAttributes attributes, in StructuredBuffer<float> bu
         
         // Forward vector (Z in unity world) is the default axis of a force
         float3 axis = ComputeForwardVectorFromRotation(rotation);
+        float3 linearAxis = hasLinearDirection ? normalizedLinearDirection : axis;
         
         // Compute local position of a particle
         float3 localPosition = ComputeLocalPositionfromRotation(centerPosition, rotation, float3(1, 1, 1), attributes.position);
@@ -97,7 +103,7 @@ void StandardForce(inout VFXAttributes attributes, in StructuredBuffer<float> bu
         float3 orthoAxialForce = 0;
         float3 orthogonalVector = 0;
         float3 orthoradialForce = 0;
-        float3 linearForce = 0;
+        float3 linearForce = linearForceIntensity * linearAxis;
         float3 spiralForce = 0;
         
         if (length(axis) > 0)
@@ -112,7 +118,6 @@ void StandardForce(inout VFXAttributes attributes, in StructuredBuffer<float> bu
                 orthoradialForce = 2.0f * (abs(clockWise) * orthoIntensity * orthogonalVector) / (pow(abs(normalizedDistance), abs(orthoFactor)) / 2);
             }
             
-            linearForce = linearForceIntensity * normalize(axis);
             
             // Ortho Axial force (inversely proportional to the distance)
             if (orthoAxialclockWise != 0)

@@ -61,6 +61,12 @@ namespace OSCQuery.UnityOSC
         
         void didRecievedEvent(OSCServer sender, OSCPacket packet)
         {
+            EnqueuePacket(packet);
+        }
+
+        public void EnqueuePacket(OSCPacket packet)
+        {
+            if (packet == null) return;
             lock (_queue)
             {
                 if (packet.IsBundle())
@@ -69,8 +75,8 @@ namespace OSCQuery.UnityOSC
                     
                     foreach(object obj in bundle.Data)
                     {
-                        OSCMessage msg = obj as OSCMessage;
-                        _queue.Enqueue(msg);
+                        // Bundles may themselves contain bundles.
+                        EnqueuePacket(obj as OSCPacket);
                     }
                 }
                 else

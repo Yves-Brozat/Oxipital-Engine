@@ -9,7 +9,7 @@ namespace Oxipital
     public class OpticalFlowDebugView : MonoBehaviour
     {
         public enum View { Off, Source, RawFlow, Trail, Output, Mask }
-        // Input = Spout image as received, Source = after crop / mirror / flip (what the flow really uses)
+        // Input follows the source orientation by default; raw input remains available for diagnosis.
         public enum PlaneView { Off, Input, Source, Output }
 
         [Header("Screen Overlay")]
@@ -21,6 +21,8 @@ namespace Oxipital
 
         [Header("Flow Plane View")]
         public PlaneView planeView = PlaneView.Off;
+        [Tooltip("Show Input with the same crop, Flip X and Flip Y as the optical flow. Disable to inspect the raw input image.")]
+        public bool followInputOrientation = true;
         [Range(0, 1)]
         public float planeOpacity = .8f;
         // Unlit HDRP colour, raise it if the scene exposure makes the image too dark
@@ -109,7 +111,7 @@ namespace Oxipital
             Vector4 channel = source.MaskChannel;
             switch (planeView)
             {
-                case PlaneView.Input: input = source.Input; break;
+                case PlaneView.Input: input = followInputOrientation ? source.Current : source.Input; break;
                 case PlaneView.Source: input = source.Current; break;
                 default: input = manager.Processor.Output; mode = 1; channel = Vector4.zero; break;
             }

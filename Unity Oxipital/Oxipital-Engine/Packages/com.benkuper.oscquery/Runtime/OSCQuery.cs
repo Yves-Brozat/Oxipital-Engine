@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -106,7 +107,7 @@ namespace OSCQuery
         HttpServer httpServer;
 
         JSONObject queryData;
-        bool dataIsReady;
+        volatile bool dataIsReady;
 
         OSCReceiver receiver;
 
@@ -114,7 +115,7 @@ namespace OSCQuery
 
         Dictionary<WSQuery, List<string>> propQueryMap;
         Dictionary<string, object> propQueryPreviousValues;
-        bool propQueryMapLock;
+        readonly ConcurrentQueue<Action> pendingSocketEvents = new ConcurrentQueue<Action>();
 
         RegisterService zeroconfService;
         RegisterService oscService;
@@ -180,11 +181,18 @@ namespace OSCQuery
             receiver?.Close();
             zeroconfService?.Dispose();
             oscService?.Dispose();
+            propQueryMap.Clear();
+            propQueryPreviousValues.Clear();
+            while (pendingSocketEvents.TryDequeue(out _)) { }
         }
 
         // Update is called once per frame
         void Update()
         {
+            // WebSocket callbacks run on worker threads. Keep subscriptions and
+            // Unity component access on the Unity thread, including reconnects.
+            ProcessSocketEvents();
+
             if (Application.isPlaying)
             {
                 if (!dataIsReady)
@@ -196,17 +204,23 @@ namespace OSCQuery
                 ProcessIncomingMessages();
             }
 
-            //while(propQueryMapLock)
-            //{
-            //wait
-            //}
-            propQueryMapLock = true;
             foreach (KeyValuePair<WSQuery, List<string>> qprops in propQueryMap)
             {
-                foreach (string s in qprops.Value) sendFeedback(s, qprops.Key);
+                foreach (string s in qprops.Value)
+                {
+                    try { sendFeedback(s, qprops.Key); }
+                    catch (Exception e)
+                    {
+                        Debug.LogWarning("OSCQuery feedback failed for " + s + ": " + e.Message);
+                    }
+                }
             }
-            propQueryMapLock = false;
 
+        }
+
+        void ProcessSocketEvents()
+        {
+            while (pendingSocketEvents.TryDequeue(out Action socketEvent)) socketEvent();
         }
 
         private void handleHTTPRequest(object sender, HttpRequestEventArgs e)
@@ -237,7 +251,16 @@ namespace OSCQuery
             else
             {
                 dataIsReady = false;
-                while (!dataIsReady) { /* wait until data is rebuild */ }
+                // Yield to Unity while the tree is rebuilt; never spin forever
+                // if play mode stops or a component prevents the rebuild.
+                var timeout = System.Diagnostics.Stopwatch.StartNew();
+                while (!dataIsReady && timeout.ElapsedMilliseconds < 5000) Thread.Sleep(1);
+                if (!dataIsReady)
+                {
+                    response.StatusCode = 503;
+                    response.Close();
+                    return;
+                }
                 responseData = queryData;
             }
 
@@ -261,18 +284,18 @@ namespace OSCQuery
 
         private void wsSocketOpened(WSQuery query)
         {
-            propQueryMap.Add(query, new List<string>());
+            pendingSocketEvents.Enqueue(() => propQueryMap[query] = new List<string>());
         }
 
         private void wsSocketClosed(WSQuery query)
         {
-            propQueryMap.Remove(query);
+            pendingSocketEvents.Enqueue(() => propQueryMap.Remove(query));
 
         }
 
         private void wsSocketError(WSQuery query)
         {
-            propQueryMap.Remove(query);
+            pendingSocketEvents.Enqueue(() => propQueryMap.Remove(query));
         }
 
         private void wsMessageReceived(WSQuery query, string message)
@@ -285,29 +308,22 @@ namespace OSCQuery
                 String data = o["DATA"].str;
                 //Debug.Log("Received Command " + command + " > " + data);
 
-                while (propQueryMapLock)
+                pendingSocketEvents.Enqueue(() =>
                 {
-                    //wait
-                }
-                propQueryMapLock = true;
-
-                if (command == "LISTEN")
-                {
-                    propQueryMap[query].Add(data);
-                }
-                else if (command == "IGNORE")
-                {
-                    propQueryMap[query].Remove(data);
-                }
-
-                propQueryMapLock = false;
+                    if (!propQueryMap.TryGetValue(query, out List<string> addresses)) return;
+                    if (command == "LISTEN" && !addresses.Contains(data)) addresses.Add(data);
+                    else if (command == "IGNORE") addresses.Remove(data);
+                });
             }
 
         }
 
         private void wsDataReceived(WSQuery query, byte[] data)
         {
-            //Debug.Log("Data received " + data.Length + " bytes");
+            // OSCQuery clients can send OSC over WebSocket after connecting.
+            // Route it through the same thread-safe queue as UDP.
+            try { receiver?.EnqueuePacket(OSCPacket.Unpack(data)); }
+            catch (Exception e) { Debug.LogWarning("Invalid OSC WebSocket packet: " + e.Message); }
         }
 
         void rebuildDataTree()
@@ -703,9 +719,9 @@ namespace OSCQuery
             while (receiver != null && receiver.hasWaitingMessages())
             {
                 OSCMessage msg = receiver.getNextMessage();
-
-                string args = "";
-                msg.Data.ForEach((arg) => args += arg.ToString() + ", ");
+                if (msg == null) continue;
+                try
+                {
 
                 //Debug.Log("info received : " + msg.Address);
                 if (compInfoMap.ContainsKey(msg.Address))
@@ -719,6 +735,9 @@ namespace OSCQuery
                         onMessageReceived?.Invoke(msg);
                         continue;
                     }
+
+                    // A group may have been removed since the last tree sync.
+                    if (info.comp == null) continue;
 
 
                     if (info.infoType == CompInfo.InfoType.Method)
@@ -843,6 +862,12 @@ namespace OSCQuery
                     Debug.LogWarning("Property not found for address : " + msg.Address);
                     onMessageReceived?.Invoke(msg);
                 }
+                }
+                catch (Exception e)
+                {
+                    // One invalid value must not interrupt the rest of the sync.
+                    Debug.LogWarning("OSCQuery rejected " + msg.Address + ": " + e.GetBaseException().Message);
+                }
             }
         }
 
@@ -856,6 +881,7 @@ namespace OSCQuery
             }
 
             CompInfo info = compInfoMap[address];
+            if (info == null || info.comp == null) return;
 
             object oldData = null;
             propQueryPreviousValues.TryGetValue(address, out oldData);
@@ -1037,7 +1063,7 @@ namespace OSCQuery
         // Helper
         float getFloatArg(object data)
         {
-            return (data is int) ? (float)(int)data : (float)data;
+            return Convert.ToSingle(data, System.Globalization.CultureInfo.InvariantCulture);
         }
 
         string getNiceName(string name)
