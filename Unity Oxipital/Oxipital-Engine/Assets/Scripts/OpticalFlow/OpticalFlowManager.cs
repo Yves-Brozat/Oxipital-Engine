@@ -69,6 +69,8 @@ namespace Oxipital
         {
             ReleaseAll();
             if (source != null) source.SetSpoutActive(false);
+            if (source != null && source.kinectInput != null) source.kinectInput.StopCapture();
+            if (source != null && source.azureKinectInput != null) source.azureKinectInput.StopCapture();
         }
 
         void Update()

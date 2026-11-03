@@ -110,6 +110,7 @@ namespace Oxipital
 
         public void StopWebcam()
         {
+            if (!cameraAttempted && cameraTexture == null && cameraRequest == null && !recordingRequested && !IsRecording) return;
             recordingRequested = false;
             if (IsRecording) StopRecording(false);
             if (cameraRequest != null) StopCoroutine(cameraRequest);
@@ -304,6 +305,8 @@ namespace Oxipital
             shader.SetVector("_VideoInfo", TextureInfo(video, sequence?.Rotation ?? 0, sequence != null && sequence.FlipY));
             float blend = mode == OpticalFlowSource.FlowSourceMode.Webcam ? 0 : mode == OpticalFlowSource.FlowSourceMode.Video ? 1 : Mathf.Clamp01(videoBlend);
             shader.SetFloat("_VideoBlend", blend);
+            shader.SetFloat("_WebcamGain", 1);
+            shader.SetFloat("_WebcamMonochrome", 0);
             OpticalFlowUtil.Dispatch(shader, kernel, target.width, target.height);
         }
 

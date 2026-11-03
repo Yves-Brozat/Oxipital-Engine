@@ -18,6 +18,12 @@ namespace Oxipital
         public float gain = 1;
         [Range(64, 1024)]
         public int displayWidth = 320;
+        [Tooltip("Fit the video / optical-flow preview to the whole screen while preserving its aspect ratio.")]
+        public bool fullscreen = true;
+        [Range(0, 1), Tooltip("Opacity of the screen preview over the particles. 0 hides only the image; hands and gauges remain visible.")]
+        public float overlayOpacity = .25f;
+        [Tooltip("Make black pixels transparent in the screen preview so they do not cover the particle scene.")]
+        public bool transparentBackground = true;
 
         [Header("Flow Plane View")]
         public PlaneView planeView = PlaneView.Off;
@@ -43,6 +49,28 @@ namespace Oxipital
         Material planeMaterialInstance;
 
         int kDebug = -1;
+        readonly Vector3[] corners = new Vector3[4];
+
+        internal Rect VideoScreenRect(int width, int height)
+        {
+            if (target != null)
+            {
+                target.rectTransform.GetWorldCorners(corners);
+                Canvas canvas = target.GetComponentInParent<Canvas>();
+                Camera camera = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.worldCamera : null;
+                Vector2 min = RectTransformUtility.WorldToScreenPoint(camera, corners[0]);
+                Vector2 max = RectTransformUtility.WorldToScreenPoint(camera, corners[2]);
+                return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+            }
+            return fullscreen ? FitScreen(width, height) : new Rect(10, 10, displayWidth, displayWidth * height / (float)Mathf.Max(1, width));
+        }
+
+        internal static Rect FitScreen(int width, int height)
+        {
+            float scale = Mathf.Min(Screen.width / (float)Mathf.Max(1, width), Screen.height / (float)Mathf.Max(1, height));
+            float w = width * scale, h = height * scale;
+            return new Rect((Screen.width - w) * .5f, (Screen.height - h) * .5f, w, h);
+        }
 
         static readonly int UnlitColorMap = Shader.PropertyToID("_UnlitColorMap");
         static readonly int UnlitColor = Shader.PropertyToID("_UnlitColor");
@@ -59,7 +87,7 @@ namespace Oxipital
         {
             RawImage image = target != null ? target : overlayImage;
 
-            if (view == View.Off)
+            if (view == View.Off || overlayOpacity <= 0)
             {
                 if (overlay != null) overlay.SetActive(false);
                 if (target != null) target.enabled = false;
@@ -84,13 +112,21 @@ namespace Oxipital
                 default: input = manager.Processor.Output; break;
             }
 
-            Draw(cs, input, debugTexture, mode, channel, source.Width, source.Height);
+            Draw(cs, input, debugTexture, mode, channel, source.Width, source.Height, transparentBackground);
 
             if (image == null) image = CreateOverlay();
             if (target == null) overlay.SetActive(true);
             image.enabled = true;
             image.texture = debugTexture;
-            image.rectTransform.sizeDelta = new Vector2(displayWidth, displayWidth * source.Height / (float)source.Width);
+            image.color = new Color(1, 1, 1, overlayOpacity);
+            image.raycastTarget = false;
+            if (target == null)
+            {
+                Rect screenRect = VideoScreenRect(source.Width, source.Height);
+                image.rectTransform.anchorMin = image.rectTransform.anchorMax = image.rectTransform.pivot = Vector2.zero;
+                image.rectTransform.anchoredPosition = screenRect.position;
+                image.rectTransform.sizeDelta = screenRect.size;
+            }
         }
 
         void RenderPlane(OpticalFlowManager manager, ComputeShader cs)
@@ -127,12 +163,13 @@ namespace Oxipital
             planeMaterialInstance.SetColor(UnlitColor, new Color(planeBrightness, planeBrightness, planeBrightness, planeOpacity));
         }
 
-        void Draw(ComputeShader cs, Texture input, RenderTexture output, int mode, Vector4 channel, int w, int h)
+        void Draw(ComputeShader cs, Texture input, RenderTexture output, int mode, Vector4 channel, int w, int h, bool transparent = false)
         {
             cs.SetInts(FlowIDs.Size, w, h);
             cs.SetInt(FlowIDs.DebugMode, mode);
             cs.SetVector(FlowIDs.DebugChannel, channel);
             cs.SetFloat(FlowIDs.DebugGain, gain);
+            cs.SetFloat("_DebugTransparentBackground", transparent ? 1 : 0);
             cs.SetTexture(kDebug, FlowIDs.DebugIn, input);
             cs.SetTexture(kDebug, FlowIDs.DebugOut, output);
             OpticalFlowUtil.Dispatch(cs, kDebug, w, h);

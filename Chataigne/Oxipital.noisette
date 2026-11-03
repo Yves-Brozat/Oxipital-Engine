@@ -1,7 +1,7 @@
 {
   "metaData": {
-    "version": "1.9.25b13",
-    "versionNumber": 67865
+    "version": "1.10.4",
+    "versionNumber": 68100
   },
   "projectSettings": {
     "parameters": [
@@ -13710,8 +13710,8 @@
             }
           ],
           "viewOffset": [
-            20,
-            -23
+            156,
+            -15
           ],
           "viewZoom": 0.828125
         }
@@ -23844,8 +23844,8 @@
             }
           ],
           "viewOffset": [
-            99,
-            -16
+            291,
+            -23
           ],
           "viewZoom": 0.828125
         },
@@ -28041,8 +28041,8 @@
             }
           ],
           "viewOffset": [
-            -3,
-            3
+            129,
+            -1
           ],
           "viewZoom": 0.7562500238418579
         }
@@ -29088,7 +29088,7 @@
                   "controlAddress": "/target"
                 },
                 {
-                  "value": "Default",
+                  "value": "",
                   "controlAddress": "/style"
                 },
                 {
@@ -29159,7 +29159,7 @@
                   "enabled": true
                 },
                 {
-                  "value": "Default",
+                  "value": "",
                   "controlAddress": "/style"
                 },
                 {
@@ -29195,7 +29195,7 @@
                   "controlAddress": "/target"
                 },
                 {
-                  "value": "Default",
+                  "value": "",
                   "controlAddress": "/style"
                 },
                 {
@@ -29276,7 +29276,7 @@
                   "enabled": false
                 },
                 {
-                  "value": "Default",
+                  "value": "",
                   "controlAddress": "/style"
                 },
                 {
@@ -29410,7 +29410,7 @@
                   "enabled": true
                 },
                 {
-                  "value": "Rotary Slider",
+                  "value": "",
                   "controlAddress": "/style"
                 },
                 {
@@ -29471,7 +29471,7 @@
                   "enabled": true
                 },
                 {
-                  "value": "Default",
+                  "value": "",
                   "controlAddress": "/style"
                 },
                 {
@@ -29564,7 +29564,7 @@
                   "controlAddress": "/target"
                 },
                 {
-                  "value": "Default",
+                  "value": "",
                   "controlAddress": "/style"
                 },
                 {
@@ -29610,7 +29610,7 @@
                   "controlAddress": "/target"
                 },
                 {
-                  "value": "Default",
+                  "value": "",
                   "controlAddress": "/style"
                 },
                 {
@@ -29706,7 +29706,7 @@
                   "enabled": false
                 },
                 {
-                  "value": "Default",
+                  "value": "",
                   "controlAddress": "/style"
                 },
                 {
@@ -30783,7 +30783,7 @@
                   "enabled": true
                 },
                 {
-                  "value": "Rotary Slider",
+                  "value": "",
                   "controlAddress": "/style"
                 },
                 {
@@ -31867,129 +31867,35 @@
   "layout": {
     "mainLayout": {
       "type": 1,
-      "width": 1920,
-      "height": 989,
+      "width": 1536,
+      "height": 917,
       "direction": 2,
       "shifters": [
         {
           "type": 1,
-          "width": 1920,
-          "height": 989,
-          "direction": 2,
+          "width": 1536,
+          "height": 917,
+          "direction": 1,
           "shifters": [
             {
-              "type": 1,
-              "width": 1920,
-              "height": 837,
-              "direction": 1,
-              "shifters": [
+              "type": 0,
+              "width": 1315,
+              "height": 917,
+              "currentContent": "Dashboard",
+              "tabs": [
                 {
-                  "type": 1,
-                  "width": 307,
-                  "height": 837,
-                  "direction": 2,
-                  "shifters": [
-                    {
-                      "type": 0,
-                      "width": 307,
-                      "height": 426,
-                      "currentContent": "Modules",
-                      "tabs": [
-                        {
-                          "name": "Modules"
-                        }
-                      ]
-                    },
-                    {
-                      "type": 0,
-                      "width": 307,
-                      "height": 405,
-                      "currentContent": "Custom Variables",
-                      "tabs": [
-                        {
-                          "name": "Custom Variables"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "type": 0,
-                  "width": 1386,
-                  "height": 837,
-                  "currentContent": "Dashboard",
-                  "tabs": [
-                    {
-                      "name": "State Machine"
-                    },
-                    {
-                      "name": "Dashboard"
-                    },
-                    {
-                      "name": "Module Router"
-                    },
-                    {
-                      "name": "Morpher"
-                    }
-                  ]
-                },
-                {
-                  "type": 0,
-                  "width": 215,
-                  "height": 837,
-                  "currentContent": "Inspector",
-                  "tabs": [
-                    {
-                      "name": "Inspector"
-                    }
-                  ]
+                  "name": "Dashboard"
                 }
               ]
             },
             {
-              "type": 1,
-              "width": 1920,
-              "height": 145,
-              "direction": 1,
-              "shifters": [
+              "type": 0,
+              "width": 215,
+              "height": 917,
+              "currentContent": "Inspector",
+              "tabs": [
                 {
-                  "type": 0,
-                  "width": 178,
-                  "height": 145,
-                  "currentContent": "Sequences",
-                  "tabs": [
-                    {
-                      "name": "Sequences"
-                    }
-                  ]
-                },
-                {
-                  "type": 0,
-                  "width": 1256,
-                  "height": 145,
-                  "currentContent": "Sequence Editor",
-                  "tabs": [
-                    {
-                      "name": "Sequence Editor"
-                    }
-                  ]
-                },
-                {
-                  "type": 0,
-                  "width": 474,
-                  "height": 145,
-                  "currentContent": "Logger",
-                  "tabs": [
-                    {
-                      "name": "Help"
-                    },
-                    {
-                      "name": "Logger"
-                    },
-                    {
-                      "name": "Warnings"
-                    }
-                  ]
+                  "name": "Inspector"
                 }
               ]
             }
@@ -32075,7 +31981,7 @@
               "controlAddress": "/onlySyncFromSameName"
             },
             {
-              "value": true,
+              "value": false,
               "controlAddress": "/isConnected"
             }
           ],
@@ -32139,7 +32045,7 @@
                       "controlAddress": "/presetName"
                     },
                     {
-                      "value": "SCALA_intro",
+                      "value": "",
                       "controlAddress": "/preset"
                     },
                     {
@@ -33134,6 +33040,16 @@
                                       "niceName": "Dancer Rotation"
                                     },
                                     "dancerLookAt": {
+                                      "parameters": [
+                                        {
+                                          "value": [
+                                            0.0,
+                                            1.0,
+                                            0.0
+                                          ],
+                                          "controlAddress": "/baseValue"
+                                        }
+                                      ],
                                       "owned": true,
                                       "niceName": "Dancer Look At"
                                     },
@@ -33548,6 +33464,16 @@
                                       "niceName": "Dancer Rotation"
                                     },
                                     "dancerLookAt": {
+                                      "parameters": [
+                                        {
+                                          "value": [
+                                            0.0,
+                                            1.0,
+                                            0.0
+                                          ],
+                                          "controlAddress": "/baseValue"
+                                        }
+                                      ],
                                       "owned": true,
                                       "niceName": "Dancer Look At"
                                     },
@@ -33785,6 +33711,16 @@
                                       "niceName": "Dancer Rotation"
                                     },
                                     "dancerLookAt": {
+                                      "parameters": [
+                                        {
+                                          "value": [
+                                            0.0,
+                                            1.0,
+                                            0.0
+                                          ],
+                                          "controlAddress": "/baseValue"
+                                        }
+                                      ],
                                       "owned": true,
                                       "niceName": "Dancer Look At"
                                     },
@@ -34283,6 +34219,16 @@
                                       "niceName": "Dancer Rotation"
                                     },
                                     "dancerLookAt": {
+                                      "parameters": [
+                                        {
+                                          "value": [
+                                            0.0,
+                                            1.0,
+                                            0.0
+                                          ],
+                                          "controlAddress": "/baseValue"
+                                        }
+                                      ],
                                       "owned": true,
                                       "niceName": "Dancer Look At"
                                     },
@@ -35160,6 +35106,16 @@
                                       "niceName": "Dancer Rotation"
                                     },
                                     "dancerLookAt": {
+                                      "parameters": [
+                                        {
+                                          "value": [
+                                            0.0,
+                                            1.0,
+                                            0.0
+                                          ],
+                                          "controlAddress": "/baseValue"
+                                        }
+                                      ],
                                       "owned": true,
                                       "niceName": "Dancer Look At"
                                     },
@@ -35779,6 +35735,16 @@
                                       "niceName": "Dancer Rotation"
                                     },
                                     "dancerLookAt": {
+                                      "parameters": [
+                                        {
+                                          "value": [
+                                            0.0,
+                                            1.0,
+                                            0.0
+                                          ],
+                                          "controlAddress": "/baseValue"
+                                        }
+                                      ],
                                       "owned": true,
                                       "niceName": "Dancer Look At"
                                     },
@@ -35837,6 +35803,16 @@
                                       "niceName": "Axial Intensity"
                                     },
                                     "axisMultiplier": {
+                                      "parameters": [
+                                        {
+                                          "value": [
+                                            0.0,
+                                            1.0,
+                                            0.0
+                                          ],
+                                          "controlAddress": "/baseValue"
+                                        }
+                                      ],
                                       "owned": true,
                                       "niceName": "Axis Multiplier"
                                     },
@@ -36102,6 +36078,16 @@
                                       "niceName": "Dancer Rotation"
                                     },
                                     "dancerLookAt": {
+                                      "parameters": [
+                                        {
+                                          "value": [
+                                            0.0,
+                                            1.0,
+                                            0.0
+                                          ],
+                                          "controlAddress": "/baseValue"
+                                        }
+                                      ],
                                       "owned": true,
                                       "niceName": "Dancer Look At"
                                     },
@@ -36160,6 +36146,16 @@
                                       "niceName": "Axial Intensity"
                                     },
                                     "axisMultiplier": {
+                                      "parameters": [
+                                        {
+                                          "value": [
+                                            0.0,
+                                            1.0,
+                                            0.0
+                                          ],
+                                          "controlAddress": "/baseValue"
+                                        }
+                                      ],
                                       "owned": true,
                                       "niceName": "Axis Multiplier"
                                     },
@@ -36361,9 +36357,9 @@
                           "parameters": [
                             {
                               "value": [
-                                -0.09999918937683105,
-                                2.999999523162842,
-                                0.0
+                                0.0,
+                                0.0,
+                                -3.299999713897705
                               ],
                               "controlAddress": "/baseValue"
                             }
@@ -36636,6 +36632,16 @@
                           "niceName": "Dancer Rotation"
                         },
                         "dancerLookAt": {
+                          "parameters": [
+                            {
+                              "value": [
+                                0.0,
+                                1.0,
+                                0.0
+                              ],
+                              "controlAddress": "/baseValue"
+                            }
+                          ],
                           "owned": true,
                           "niceName": "Dancer Look At"
                         },
@@ -37210,6 +37216,16 @@
                           "niceName": "Dancer Rotation"
                         },
                         "dancerLookAt": {
+                          "parameters": [
+                            {
+                              "value": [
+                                0.0,
+                                1.0,
+                                0.0
+                              ],
+                              "controlAddress": "/baseValue"
+                            }
+                          ],
                           "owned": true,
                           "niceName": "Dancer Look At"
                         },
@@ -37725,7 +37741,7 @@
                         "dancerSize": {
                           "parameters": [
                             {
-                              "value": 5.118110179901123,
+                              "value": 8.673666000366211,
                               "minValue": 0.0,
                               "maxValue": 20.0,
                               "default": 1.0,
@@ -37766,7 +37782,7 @@
                         "dancerIntensity": {
                           "parameters": [
                             {
-                              "value": 0.1968503892421722,
+                              "value": 0.7635170221328735,
                               "minValue": 0.0,
                               "maxValue": 1.0,
                               "default": 1.0,
@@ -37825,6 +37841,16 @@
                           "niceName": "Dancer Rotation"
                         },
                         "dancerLookAt": {
+                          "parameters": [
+                            {
+                              "value": [
+                                0.0,
+                                1.0,
+                                0.0
+                              ],
+                              "controlAddress": "/baseValue"
+                            }
+                          ],
                           "owned": true,
                           "niceName": "Dancer Look At"
                         },
@@ -38068,7 +38094,7 @@
                         "linearIntensity": {
                           "parameters": [
                             {
-                              "value": 0.0,
+                              "value": 0.3777777552604675,
                               "minValue": 0.0,
                               "maxValue": 1.0,
                               "default": 0.0,
@@ -38161,7 +38187,7 @@
                         "curlIntensity": {
                           "parameters": [
                             {
-                              "value": 0.3149606287479401,
+                              "value": 0.5788495540618896,
                               "minValue": 0.0,
                               "maxValue": 1.0,
                               "default": 0.0,
@@ -38384,7 +38410,7 @@
                         "orthoaxialIntensity": {
                           "parameters": [
                             {
-                              "value": 0.0,
+                              "value": 0.07777778804302216,
                               "minValue": 0.0,
                               "maxValue": 1.0,
                               "default": 0.0,
@@ -38703,6 +38729,16 @@
                           "niceName": "Dancer Rotation"
                         },
                         "dancerLookAt": {
+                          "parameters": [
+                            {
+                              "value": [
+                                0.0,
+                                1.0,
+                                0.0
+                              ],
+                              "controlAddress": "/baseValue"
+                            }
+                          ],
                           "owned": true,
                           "niceName": "Dancer Look At"
                         },
@@ -39336,7 +39372,7 @@
                           "controlAddress": "/orthoSize"
                         },
                         {
-                          "value": 3.300520420074463,
+                          "value": 10.8005313873291,
                           "controlAddress": "/followZOffset"
                         },
                         {
@@ -39817,11 +39853,15 @@
                           "controlAddress": "/rotateZSpeed"
                         },
                         {
+                          "value": true,
+                          "controlAddress": "/controlRotateWithAngle"
+                        },
+                        {
                           "value": 0.0,
                           "controlAddress": "/rotateYAngle"
                         },
                         {
-                          "value": 0.0,
+                          "value": 269.9988403320312,
                           "controlAddress": "/rotateXAngle"
                         },
                         {
@@ -40089,9 +40129,9 @@
                           "parameters": [
                             {
                               "value": [
-                                -0.09999918937683105,
-                                2.999999523162842,
-                                0.0
+                                0.0,
+                                0.0,
+                                -3.299999713897705
                               ],
                               "controlAddress": "/position"
                             },
@@ -40453,7 +40493,7 @@
                               "controlAddress": "/axisMultiplier"
                             },
                             {
-                              "value": 0.0,
+                              "value": 0.3777777552604675,
                               "controlAddress": "/linearIntensity"
                             },
                             {
@@ -40469,7 +40509,7 @@
                               "controlAddress": "/orthoClockwise"
                             },
                             {
-                              "value": 0.3149606287479401,
+                              "value": 0.5788495540618896,
                               "controlAddress": "/curlIntensity"
                             },
                             {
@@ -40517,7 +40557,7 @@
                               "controlAddress": "/perlinTranslationSpeed"
                             },
                             {
-                              "value": 0.0,
+                              "value": 0.07777778804302216,
                               "controlAddress": "/orthoaxialIntensity"
                             },
                             {
@@ -40525,11 +40565,11 @@
                               "controlAddress": "/orthoaxialInnerRadius"
                             },
                             {
-                              "value": 5.118110179901123,
+                              "value": 8.673666000366211,
                               "controlAddress": "/dancerSize"
                             },
                             {
-                              "value": 0.1968504611452033,
+                              "value": 0.7635170940359046,
                               "controlAddress": "/dancerIntensity"
                             },
                             {
@@ -48065,7 +48105,7 @@
           },
           "DESCRIPTION": "Root Scene"
         },
-        "hasListenExtension": true
+        "hasListenExtension": false
       },
       {
         "parameters": [
@@ -49522,7 +49562,7 @@
             {
               "parameters": [
                 {
-                  "value": 0.0,
+                  "value": 270.0,
                   "minValue": 0,
                   "maxValue": 360,
                   "default": 0,
@@ -49629,7 +49669,7 @@
                   "controlAddress": "/viewUIPosition"
                 },
                 {
-                  "value": 3.300520420074463,
+                  "value": 10.80052089691162,
                   "minValue": 0,
                   "maxValue": 30,
                   "default": 0,
@@ -52117,9 +52157,9 @@
               "parameters": [
                 {
                   "value": [
-                    -0.09999918937683105,
-                    2.999999523162842,
-                    0.0
+                    0.0,
+                    0.0,
+                    -3.299999713897705
                   ],
                   "controlAddress": "/position",
                   "feedbackOnly": false,
@@ -58954,7 +58994,7 @@
             {
               "parameters": [
                 {
-                  "value": 0.1968503892421722,
+                  "value": 0.7635170221328735,
                   "minValue": 0,
                   "maxValue": 1,
                   "default": 0.0,
@@ -58975,7 +59015,7 @@
             {
               "parameters": [
                 {
-                  "value": 5.118110179901123,
+                  "value": 8.673666000366211,
                   "minValue": 0.0,
                   "maxValue": 10.0,
                   "default": 0.0,
@@ -59248,7 +59288,7 @@
             {
               "parameters": [
                 {
-                  "value": 0.0,
+                  "value": 0.3777777552604675,
                   "minValue": 0,
                   "maxValue": 1,
                   "default": 0.0,
@@ -59353,7 +59393,7 @@
             {
               "parameters": [
                 {
-                  "value": 0.0,
+                  "value": 0.07777778804302216,
                   "minValue": 0,
                   "maxValue": 1,
                   "default": 0.0,
@@ -59437,7 +59477,7 @@
             {
               "parameters": [
                 {
-                  "value": 0.3149606287479401,
+                  "value": 0.5371828675270081,
                   "minValue": 0,
                   "maxValue": 1,
                   "default": 0.0,
@@ -64691,7 +64731,7 @@
                   "controlAddress": "/enabled"
                 },
                 {
-                  "value": 162.0,
+                  "value": 24.0,
                   "controlAddress": "/listSize"
                 },
                 {
@@ -66455,7 +66495,7 @@
                   "controlAddress": "/enabled"
                 },
                 {
-                  "value": 162.0,
+                  "value": 24.0,
                   "controlAddress": "/listSize"
                 },
                 {
@@ -67037,7 +67077,7 @@
                   "controlAddress": "/enabled"
                 },
                 {
-                  "value": 162.0,
+                  "value": 24.0,
                   "controlAddress": "/listSize"
                 },
                 {
@@ -67749,7 +67789,7 @@
                   "controlAddress": "/enabled"
                 },
                 {
-                  "value": 110.0,
+                  "value": 24.0,
                   "controlAddress": "/listSize"
                 },
                 {
@@ -68098,7 +68138,7 @@
                   "controlAddress": "/enabled"
                 },
                 {
-                  "value": 188.0,
+                  "value": 24.0,
                   "controlAddress": "/listSize"
                 },
                 {
@@ -70461,7 +70501,7 @@
             {
               "parameters": [
                 {
-                  "value": 24.0,
+                  "value": 84.0,
                   "controlAddress": "/listSize"
                 },
                 {
@@ -78227,10 +78267,10 @@
       }
     ],
     "viewOffset": [
-      155,
-      -61
+      364,
+      -72
     ],
-    "viewZoom": 0.296875,
+    "viewZoom": 0.765625,
     "transitions": {
       "hideInEditor": true,
       "viewOffset": [
@@ -78242,10 +78282,10 @@
     "comments": {
       "hideInEditor": true,
       "viewOffset": [
-        155,
-        -61
+        364,
+        -72
       ],
-      "viewZoom": 0.296875
+      "viewZoom": 0.765625
     }
   },
   "sequences": {

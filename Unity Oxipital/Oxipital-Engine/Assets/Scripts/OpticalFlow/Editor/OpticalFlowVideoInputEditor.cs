@@ -16,7 +16,7 @@ namespace Oxipital.Editor
             if (source != null)
             {
                 int selected = (int)source.mode - 2;
-                int next = GUILayout.Toolbar(selected, new[] { "Webcam", "Video", "Blend" });
+                int next = GUILayout.Toolbar(selected, new[] { "Webcam", "Video", "Blend", "Kinect V2", "Azure IR" });
                 if (next != selected && next >= 0)
                 {
                     Undo.RecordObject(source, "Change optical flow input");
@@ -86,6 +86,24 @@ namespace Oxipital.Editor
         {
             DrawDefaultInspector();
             var source = (OpticalFlowSource)target;
+            if (source.IsKinectInput)
+            {
+                var kinect = source.FindKinectInput();
+                if (kinect == null)
+                {
+                    if (GUILayout.Button(source.IsAzureKinectInput ? "Add Azure Kinect IR Controls" : "Add Kinect V2 IR / RGB Controls"))
+                    {
+                        Undo.RecordObject(source, "Assign Kinect input");
+                        if (source.IsAzureKinectInput) source.azureKinectInput = Undo.AddComponent<OpticalFlowAzureKinectInput>(source.gameObject);
+                        else source.kinectInput = Undo.AddComponent<OpticalFlowKinectInput>(source.gameObject);
+                        EditorUtility.SetDirty(source);
+                    }
+                }
+                else EditorGUILayout.HelpBox(source.IsAzureKinectInput
+                    ? "Choose NFOV Unbinned or WFOV Binned on Optical Flow Azure Kinect Input. Both use active IR and request 30 FPS."
+                    : "Configure IR / RGB and view received FPS on Optical Flow Kinect Input below.", MessageType.Info);
+                return;
+            }
             if (!source.IsVideoInput) return;
             var input = source.videoInput != null ? source.videoInput : source.GetComponent<OpticalFlowVideoInput>();
             if (input == null)

@@ -38,6 +38,7 @@ float _Feedback;
 int _DebugMode;       // 0 = raw rgb, 1 = flow colour, 2 = single channel
 float4 _DebugChannel;
 float _DebugGain;
+float _DebugTransparentBackground;
 
 bool OutOfBounds(uint2 id)
 {
@@ -129,5 +130,6 @@ void DebugView(uint3 id : SV_DispatchThreadID)
         rgb = saturate(c.rgb * _DebugGain);
     }
 
-    _DebugOut[id.xy] = float4(rgb, 1);
+    float alpha = _DebugTransparentBackground > 0.5 ? saturate(max(rgb.r, max(rgb.g, rgb.b))) : 1;
+    _DebugOut[id.xy] = float4(rgb, alpha);
 }

@@ -13,7 +13,7 @@ namespace Oxipital
     public class OpticalFlowSource : MonoBehaviour
     {
         // Preserve the serialized Spout values used by scenes and OSC.
-        public enum FlowSourceMode { SpoutFlow, SpoutMaskComputeInUnity, Webcam, Video, Blend }
+        public enum FlowSourceMode { SpoutFlow, SpoutMaskComputeInUnity, Webcam, Video, Blend, Kinect, AzureKinectIR }
         public enum ChangeDetection { GPUDiff, EveryFrame, FixedRate }
 
         [Header("Input")]
@@ -22,6 +22,11 @@ namespace Oxipital
         public bool useTestSource = false;
         [OSCQuery.DoNotExpose]
         public OpticalFlowVideoInput videoInput;
+        [OSCQuery.DoNotExpose]
+        public OpticalFlowKinectInput kinectInput;
+        [OSCQuery.DoNotExpose]
+        public OpticalFlowAzureKinectInput azureKinectInput;
+        public OpticalFlowKinectInput ActiveKinectInput => IsAzureKinectInput ? azureKinectInput : kinectInput;
 
         [Header("Orientation")]
         [InspectorName("Flip X (Mirror)"), Tooltip("Mirror the input image horizontally, including the flow and its aligned debug views.")]
@@ -66,6 +71,7 @@ namespace Oxipital
 
         int kCopy, kDetect, kCommit;
         bool seedHistory;
+        long lastKinectFrame;
         Vector4 previousCrop;
         Vector2 previousFlipSign;
         SpoutReceiver suspendedReceiver;
@@ -119,8 +125,19 @@ namespace Oxipital
         public int Height { get; private set; }
         public bool IsFlowMode => mode == FlowSourceMode.SpoutFlow;
         public bool IsVideoInput => mode == FlowSourceMode.Webcam || mode == FlowSourceMode.Video || mode == FlowSourceMode.Blend;
+        public bool IsAzureKinectInput => mode == FlowSourceMode.AzureKinectIR;
+        public bool IsKinectInput => mode == FlowSourceMode.Kinect || IsAzureKinectInput;
         internal int InputRevision => ((int)mode * 397) ^ (useTestSource ? 131 : 0) ^
-            (IsVideoInput && videoInput != null ? videoInput.Revision * 7919 : 0);
+            (IsVideoInput && videoInput != null ? videoInput.Revision * 7919 : 0) ^
+            (IsKinectInput && ActiveKinectInput != null ? ActiveKinectInput.Revision * 7919 : 0);
+
+        public OpticalFlowKinectInput FindKinectInput()
+        {
+            if (ActiveKinectInput != null) return ActiveKinectInput;
+            foreach (var candidate in GetComponents<OpticalFlowKinectInput>())
+                if ((candidate is OpticalFlowAzureKinectInput) == IsAzureKinectInput) return candidate;
+            return null;
+        }
         public Vector2 FlowSign => new Vector2(invertX ? -1 : 1, invertY ? -1 : 1);
         public Vector4 MaskChannel => IsFlowMode ? new Vector4(0, 0, 1, 0) : new Vector4(1, 0, 0, 0);
 
@@ -160,6 +177,12 @@ namespace Oxipital
             if (useTestSource && testSource != null)
             {
                 source = testSource.Render(this);
+            }
+            else if (IsKinectInput)
+            {
+                if (receiver != null && receiver.targetTexture == input) receiver.targetTexture = null;
+                if (ActiveKinectInput != null && ActiveKinectInput.isActiveAndEnabled) ActiveKinectInput.Render(shader, input);
+                else OpticalFlowUtil.Clear(input);
             }
             else if (IsVideoInput)
             {
@@ -213,7 +236,26 @@ namespace Oxipital
         // Keeps the last known size while no sender is connected.
         internal void UpdateReceivedSize()
         {
-            SetSpoutActive(!useTestSource && !IsVideoInput);
+            SetSpoutActive(!useTestSource && !IsVideoInput && !IsKinectInput);
+            if ((!IsKinectInput || IsAzureKinectInput || useTestSource) && kinectInput != null) kinectInput.StopCapture();
+            if ((!IsAzureKinectInput || useTestSource) && azureKinectInput != null) azureKinectInput.StopCapture();
+            if (IsKinectInput && !useTestSource)
+            {
+                if (videoInput != null) videoInput.StopWebcam();
+                if (IsAzureKinectInput)
+                {
+                    if (azureKinectInput == null) azureKinectInput = FindKinectInput() as OpticalFlowAzureKinectInput;
+                    if (azureKinectInput == null) azureKinectInput = gameObject.AddComponent<OpticalFlowAzureKinectInput>();
+                }
+                else
+                {
+                    if (kinectInput == null) kinectInput = FindKinectInput();
+                    if (kinectInput == null) kinectInput = gameObject.AddComponent<OpticalFlowKinectInput>();
+                }
+                ActiveKinectInput.PrepareInput();
+                receivedSize = ActiveKinectInput.WorkingSize;
+                return;
+            }
             if (IsVideoInput && !useTestSource)
             {
                 if (videoInput == null) videoInput = GetComponent<OpticalFlowVideoInput>();
@@ -254,6 +296,15 @@ namespace Oxipital
 
         float GetForcedChange()
         {
+            // Native acquisition gives exact frame identity. Never compute motion
+            // between duplicate uploads, even if EveryFrame is selected for other sources.
+            if (IsKinectInput && !useTestSource)
+            {
+                if (ActiveKinectInput == null || ActiveKinectInput.Texture == null) return 0;
+                bool changed = lastKinectFrame != ActiveKinectInput.FrameNumber;
+                lastKinectFrame = ActiveKinectInput.FrameNumber;
+                return changed ? 1 : 0;
+            }
             switch (changeDetection)
             {
                 case ChangeDetection.EveryFrame:

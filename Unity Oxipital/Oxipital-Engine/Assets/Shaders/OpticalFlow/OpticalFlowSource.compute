@@ -30,6 +30,8 @@ RWTexture2D<float4> _VideoOut;
 float4 _WebcamInfo; // oriented aspect, quarter turns clockwise, vertical flip, available
 float4 _VideoInfo;
 float _VideoBlend;
+float _WebcamGain;
+float _WebcamMonochrome;
 
 int2 _Size;
 float4 _Crop;         // uv rect : xy = min, zw = max
@@ -77,6 +79,8 @@ void VideoInput(uint3 id : SV_DispatchThreadID)
     float2 cameraUV = VideoUV(uv, _WebcamInfo, cameraInside);
     float2 videoUV = VideoUV(uv, _VideoInfo, videoInside);
     float3 camera = _Webcam.SampleLevel(sampler_linear_clamp, cameraUV, 0).rgb * cameraInside;
+    if (_WebcamMonochrome > 0.5) camera = camera.rrr;
+    camera = saturate(camera * _WebcamGain);
     float3 video = _Video.SampleLevel(sampler_linear_clamp, videoUV, 0).rgb * videoInside;
     float luminance = dot(lerp(camera, video, _VideoBlend), float3(0.2126, 0.7152, 0.0722));
     // Existing flow algorithms consume R as luminance; these sources have no depth.

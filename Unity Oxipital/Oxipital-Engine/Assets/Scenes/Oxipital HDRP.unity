@@ -134,6 +134,43 @@ Transform:
   m_Children: []
   m_Father: {fileID: 664430385}
   m_LocalEulerAnglesHint: {x: 17.09, y: -33.551, z: -128.641}
+--- !u!84 &23464307
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 6
+  m_Width: 1920
+  m_Height: 1080
+  m_AntiAliasing: 1
+  m_MipCount: -1
+  m_DepthStencilFormat: 90
+  m_ColorFormat: 4
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 1
+  m_UseDynamicScale: 0
+  m_UseDynamicScaleExplicit: 0
+  m_BindMS: 0
+  m_EnableCompatibleFormat: 1
+  m_EnableRandomWrite: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+  m_ShadowSamplingMode: 2
 --- !u!4 &45846872
 Transform:
   m_ObjectHideFlags: 0
@@ -1588,43 +1625,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 627463136}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!84 &628583177
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_IsAlphaChannelOptional: 0
-  serializedVersion: 6
-  m_Width: 1920
-  m_Height: 1080
-  m_AntiAliasing: 1
-  m_MipCount: -1
-  m_DepthStencilFormat: 90
-  m_ColorFormat: 4
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 1
-  m_UseDynamicScale: 0
-  m_UseDynamicScaleExplicit: 0
-  m_BindMS: 0
-  m_EnableCompatibleFormat: 1
-  m_EnableRandomWrite: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
-  m_ShadowSamplingMode: 2
 --- !u!1 &664430384
 GameObject:
   m_ObjectHideFlags: 0
@@ -1780,7 +1780,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &740355176
 Transform:
   m_ObjectHideFlags: 0
@@ -3573,7 +3573,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1341756924
 Transform:
   m_ObjectHideFlags: 0
@@ -4132,7 +4132,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 15671
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 628583177}
+  m_TargetTexture: {fileID: 23464307}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
@@ -4365,6 +4365,9 @@ GameObject:
   - component: {fileID: 1480724089}
   - component: {fileID: 1480724088}
   - component: {fileID: 1480724096}
+  - component: {fileID: 1480724097}
+  - component: {fileID: 1480724098}
+  - component: {fileID: 1480724099}
   m_Layer: 0
   m_Name: Optical Flow
   m_TagString: Untagged
@@ -4421,6 +4424,9 @@ MonoBehaviour:
   view: 1
   gain: 1
   displayWidth: 320
+  fullscreen: 1
+  overlayOpacity: 0.013
+  transparentBackground: 1
   planeView: 1
   followInputOrientation: 1
   planeOpacity: 0.8
@@ -4462,7 +4468,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowManager
   forceEnabled: 1
   intensity: 1
-  strength: 10
+  strength: 20
   depthBand: 5
   windBlend: 0.437
   windSpeed: 5.63
@@ -4522,11 +4528,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ec3f014c43e98b43be7fb1464d8b0ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowSource
-  mode: 2
+  mode: 6
   spoutName: OxipitalFlow
   useTestSource: 0
   videoInput: {fileID: 1480724096}
-  mirror: 0
+  kinectInput: {fileID: 1480724097}
+  azureKinectInput: {fileID: 1480724098}
+  mirror: 1
   flipY: 0
   invertX: 0
   invertY: 0
@@ -4570,7 +4578,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b02ce7ea399e4e4d9debceba209d8b20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowVideoInput
-  deviceName: Camera (NVIDIA Broadcast)
+  deviceName: Kinect V2 Video Sensor
   cameraWidth: 1280
   cameraHeight: 720
   cameraFrameRate: 30
@@ -4586,6 +4594,98 @@ MonoBehaviour:
   playRecordingOnStop: 1
   showControls: 0
   lastRecordingPath: 
+--- !u!114 &1480724097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1480724086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef5b5161398549b9b3ab4a0b39ba9370, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowKinectInput
+  stream: 0
+  processingWidth: 256
+  infraredGain: 4
+--- !u!114 &1480724098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1480724086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4f49e3358b7464c905135d2f51050c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowAzureKinectInput
+  stream: 0
+  processingWidth: 256
+  infraredGain: 128
+  deviceIndex: 0
+  depthMode: 1
+  bodyTracking: 1
+  bodyTrackingGpu: 0
+  bodyModelPath: 
+  minimumHandConfidence: 2
+  trackingTimeout: 0.3
+--- !u!114 &1480724099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1480724086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97e0e0e5307d4a35bbc8671eefd92683, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.TwoHandForceBrush
+  input: {fileID: 1480724098}
+  target: {fileID: 0}
+  forceManager: {fileID: 1559722774}
+  forceGroupNumber: 1
+  controlForcePosition: 1
+  controlBrushParameters: 1
+  controlForceOrientation: 0
+  controlOrbPosition: 0
+  controlOrbRadius: 0
+  orbRadiusMultiplier: 1
+  orientationOffset: {x: 0, y: 0, z: 90}
+  orbTarget: {fileID: 0}
+  orbManager: {fileID: 0}
+  orbGroupNumber: 1
+  sensorOrigin: {fileID: 0}
+  positionMapping: 0
+  visualizationCamera: {fileID: 0}
+  interactionPlane: {fileID: 0}
+  useTargetDepth: 1
+  interactionDepth: 10
+  brushes:
+  - {fileID: 11400000, guid: b5725071c58985f4cb8ae27d587845f8, type: 2}
+  - {fileID: 11400000, guid: 773348c02f22e6c4c99bbe505c90a53a, type: 2}
+  - {fileID: 11400000, guid: cf44132384ea3c348ac095df0d6ec76b, type: 2}
+  selectedBrush: 0
+  brushEnabled: 1
+  strength: 1
+  intensityMapping: 0
+  intensityDistanceRange: {x: 0.1, y: 1}
+  invertGestureIntensity: 0
+  radiusMultiplier: 0.5
+  sizeMultiplier: 1
+  minimumRadius: 0.05
+  maximumRadius: 3
+  minimumAxisDistance: 0.08
+  smoothingSeconds: 0.08
+  activationFadeSeconds: 0.12
+  orientAlongHands: 1
+  driveLinearDirection: 1
+  showMonitor: 1
+  monitorScale: 1.5
+  showHandOverlay: 1
+  overlayProjection: 0
 --- !u!1 &1487749451
 GameObject:
   m_ObjectHideFlags: 0
@@ -4811,6 +4911,17 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1491886275}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1559722774 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2374822408208879712, guid: 2d8ae6407d50bd54f89baf6a52091c8a, type: 3}
+  m_PrefabInstance: {fileID: 1740264274}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b2e9e73f61ddbd4d8b3e10c466c948c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1575622342
 GameObject:
   m_ObjectHideFlags: 0
@@ -5231,7 +5342,7 @@ MonoBehaviour:
   _keepAlpha: 0
   _captureMethod: 2
   _sourceCamera: {fileID: 0}
-  _sourceTexture: {fileID: 628583177}
+  _sourceTexture: {fileID: 23464307}
   _resources: {fileID: 11400000, guid: f449ebbe2051c2e4d993eaa773a410de, type: 2}
 --- !u!114 &1783646959
 MonoBehaviour:
