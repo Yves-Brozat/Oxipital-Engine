@@ -51,9 +51,9 @@ MonoBehaviour:
   lookAtTarget: {fileID: 6057321336191732691}
   camera: {fileID: 0}
   orthographic: 0
-  fov: 75
+  fov: 25
   orthoSize: 2
-  followZOffset: 4
+  followZOffset: 5
   resetDuration: 5
   cameraType: 0
   cameraTransitionDuration: 8

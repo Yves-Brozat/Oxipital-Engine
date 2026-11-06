@@ -65,6 +65,28 @@ namespace Oxipital.Editor
                     Require(receiver.hasWaitingMessages(), "UDP receiver stopped responding");
                     Call(query, "ProcessIncomingMessages");
                     Require(probe.scalar == .625f, "UDP control did not apply after WebSocket control");
+
+                    // Recall-sized bursts must survive the OS socket queue,
+                    // even while the Unity main thread has not drained OSC yet.
+                    const int burstSize = 1200;
+                    var datagrams = new byte[burstSize][];
+                    for (int i = 0; i < burstSize; i++) datagrams[i] = Message("scalar", (float)i).BinaryData;
+                    using (var sender = new UdpClient())
+                        foreach (byte[] bytes in datagrams)
+                            sender.Send(bytes, bytes.Length, new IPEndPoint(IPAddress.Loopback, port));
+                    int received = 0;
+                    timeout.Restart();
+                    while (received < burstSize && timeout.ElapsedMilliseconds < 3000)
+                    {
+                        while (receiver.hasWaitingMessages())
+                        {
+                            var packet = receiver.getNextMessage();
+                            Require((float)packet.Data[0] == received, "OSC preset burst lost or reordered a value");
+                            received++;
+                        }
+                        if (received < burstSize) Thread.Sleep(1);
+                    }
+                    Require(received == burstSize, "OSC preset burst was only partially received: " + received + "/" + burstSize);
                 }
                 finally { receiver.Close(); }
 

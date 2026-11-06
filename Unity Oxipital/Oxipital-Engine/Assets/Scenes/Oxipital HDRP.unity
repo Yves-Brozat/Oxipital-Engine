@@ -1777,9 +1777,9 @@ MonoBehaviour:
   camera: {fileID: 1414289106}
   cinemachineBrain: {fileID: 1414289107}
   orthographic: 0
-  fov: 75
+  fov: 25
   orthoSize: 2
-  followZOffset: 4
+  followZOffset: 5
   resetDuration: 5
   cameraType: 0
   cameraTransitionDuration: 8

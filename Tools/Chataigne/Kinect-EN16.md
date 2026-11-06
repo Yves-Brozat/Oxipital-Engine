@@ -191,15 +191,27 @@ banque et reprennent lorsqu'elle est désactivée.
 | 5 | Force Position |
 | 6 | Force Radius (contrôle existant intensité/rayon) |
 | 7 | Force Orientation |
-| 8 | Invert Gesture Intensity |
+| 8 | Two Hands Forces |
 | 9 | Reset Camera |
 | 10 | Sync Data |
-| 11 | Show Monitor |
-| 12 | Meduses |
+| 11 | Invert Gesture Intensity |
+| 12 | Single Hand Only |
 | 13 | Kinect Enabled |
-| 14 | Brush Enabled |
+| 14 | Show Monitor |
 | 15 | Use Target Depth |
 | 16 | EN16 Kinect Bank (dans les deux banques) |
+
+Le bouton 8 **Two Hands Forces** est disponible sur le dashboard Kinect
+et les appuis EN16 de cette banque. Il duplique la force sélectionnée et place
+chaque source sur une main, avec des paramètres partagés. **Force Position**
+doit être activé. Le bouton 12 **Single Hand Only** remplace le raccourci Méduses
+uniquement dans cette banque. Activé, il garde la première main suivie puis
+passe à l'autre si elle est perdue ; désactivé, les deux mains sont actives.
+Il agit seulement sur les groupes en mode Two Hand Orbs ou Two Hands Forces.
+Les deux nouveaux réglages sont enregistrés dans les presets Kinect et sont
+initialisés à false pour préserver les comportements des presets existants.
+L'activation générale Brush Enabled reste dans les custom variables et le
+moniteur. Le raccourci Méduses du dashboard Abysses est conservé.
 
 **Kinect Enabled** commande `TwoHandForceBrush.remoteControlEnabled` : il active
 ou désactive le composant gestuel et libère ses groupes lors de sa désactivation.
@@ -224,32 +236,51 @@ L'ordre reprend les 16 canaux de la liste existante **EN16 Rotary Page 1**.
 
 | Encodeur | Variable | Pas |
 | --- | --- | --- |
-| 1 | Strength | 0,01 |
-| 2 | Radius Multiplier | 0,01 |
-| 3 | Size Multiplier | 0,05 |
-| 4 | Orb Radius Multiplier | 0,05 |
-| 5 | Debug: Overlay Opacity | 0,01 |
-| 6 | Flow: Intensity | 0,01 |
-| 7 | Flow: Strength | 0,5 |
-| 8 | Smoothing Seconds | 0,005 |
-| 9 | Interaction Depth | 0,1 |
-| 10 | Maximum Radius | 0,05 |
-| 11 | Minimum Radius | 0,01 |
-| 12 | Activation Fade Seconds | 0,01 |
-| 13 | Force Group Number | 1 |
-| 14 | Orb Group Number | 1 |
-| 15 | Monitor Scale (zoom du moniteur) | 0,05 |
-| 16 | Minimum Axis Distance | 0,005 |
+| 1 | Smoothing Seconds | 0,005 |
+| 2 | Orb Radius Multiplier | 0,05 |
+| 3 | Max Hand Depth (m) | 0,05 |
+| 4 | Minimum Hand Confidence | 1 |
+| 5 | Strength | 0,01 |
+| 6 | Force Radius Multiplier | 0,01 |
+| 7 | Tracking Timeout (s) | 0,01 |
+| 8 | Wind Intensity (windDrag) | 0,1 |
+| 9 | Size Multiplier | 0,05 |
+| 10 | Wind Blend | 0,01 |
+| 11 | Flow Output Gain | 0,05 |
+| 12 | Flow Strength | 0,5 |
+| 13 | Debug Overlay Opacity | 0,01 |
+| 14 | Monitor Scale (zoom du moniteur) | 0,05 |
+| 15 | Interaction Depth | 0,1 |
+| 16 | Flow Intensity | 0,01 |
 
 **Unity Brush Index** est fixé à 0 dans cette configuration : les paramètres
-de force restent gérés par les presets Chataigne existants. Le potard 15 règle
+de force restent gérés par les presets Chataigne existants. Le potard 14 règle
 désormais le zoom du moniteur. Les numéros de groupes commencent à 1 ; choisir
 un groupe réellement créé dans la scène. Maintenir Minimum Radius ≤ Maximum Radius.
 
 Les trois **Orientation Offset X/Y/Z** sont placés à droite de la grille des
 boutons, dans une colonne de contrôles rotatifs réglables à la souris. Leurs
-variables et leurs valeurs dans les presets sont conservées ; les encodeurs
-physiques 5/6/7 pilotent désormais les trois paramètres optical flow ci-dessus.
+variables et leurs valeurs dans les presets sont conservées.
+
+**Max Hand Depth** est la distance maximale des mains sur l'axe Z du capteur,
+en mètres. Activer le nouveau switch **Hand Depth Filter**, à droite de la
+grille, pour appliquer cette frontière. Le minimum reste celui réglé dans
+OpticalFlowAzureKinectInput. Cette limite ne prolonge pas la portée physique
+du capteur. L'état du filtre et la distance sont enregistrés dans les presets.
+Le filtre conserve au départ son état actuel dans Unity.
+
+**Minimum Hand Confidence** vaut 1 (accepter la confiance faible) ou 2
+(exiger au moins la confiance moyenne). **Tracking Timeout** est le délai
+maximal de validité du suivi, en secondes.
+
+**Wind Intensity** contrôle `OpticalFlowManager.windDrag`. **Wind Blend**
+passe de la poussée additive (0) au vent (1) ; Wind Intensity agit lorsque
+Wind Blend est supérieur à zéro. La vitesse cible `windSpeed` reste réglable
+dans Unity. **Flow Output Gain** contrôle `OpticalFlowProcessor.outputGain`,
+qui amplifie le vecteur réellement transmis aux particules, sous la limite
+`maxLength`. Le gain de `OpticalFlowDebugView` ne sert qu'à l'affichage.
+Les nouveaux paramètres reprennent les valeurs relevées dans Unity et sont
+enregistrables dans chacun des presets Kinect.
 
 **Debug: Overlay Opacity** correspond à `OpticalFlowDebugView.overlayOpacity`
 (0 à 1). Il règle la transparence de l'image caméra / optical flow superposée
@@ -429,3 +460,129 @@ envoyés, et son activation est envoyée en dernier. Le mode Edition Unity
 bloque ces envois. `Test-KinectPresetResend.js` vérifie ce chemin avec une
 Unity simulée ayant conservé des interrupteurs différents de Chataigne.
 La validation dans les applications nécessite ensuite un rappel de preset.
+
+### Adresses natives et référence de cadrage
+
+Les Custom Variables ont un identifiant de conteneur et un identifiant de valeur
+distincts. Après sauvegarde native, Two Hands Forces utilise
+`/customVariables/kinect/variables/twoHandForces/twoHandsForces`, et Single Hand
+Only utilise `/customVariables/kinect/variables/singleHandAtATime/singleHandOnly`.
+Le script lit désormais la valeur à partir des métadonnées du conteneur, sans
+supposer que ces deux identifiants sont identiques. Il vérifie seulement ces
+deux interrupteurs à 10 Hz et envoie un message OSC quand leur valeur change.
+Le renvoi complet lors d'un preset ou d'une reconnexion reste indépendant du
+cache OSCQuery. Le contrôle ne génère donc pas de trafic continu au repos.
+
+L'audit du 6 novembre a relevé FoV 75 dans Unity alors que le spectacle demandait
+25. À taille d'émetteur identique, le rapport des champs visibles vaut
+`tan(75°/2) / tan(25°/2) ≈ 3,46`, ce qui explique qu'un Zoffset proche de 1,45
+compense temporairement un cadrage prévu à Zoffset 5. La correction conserve
+les émetteurs et les noises : elle renvoie FoV et Zoffset depuis les variables
+caméra lors d'une synchronisation ou d'un rappel, et restaure Reset à Zoffset 5.
+
+`Repair-ControlAddressesAndCameraSync.ps1` répare les deux entrées, leurs liens
+de sortie et les commandes EN16 sur une copie de la session réenregistrée par
+Chataigne. `Test-ControlAddressesAndCameraSync.ps1` vérifie les adresses natives
+et la conservation des groupes de presets visuels. `Test-KinectPresetResend.js`
+reproduit les noms natifs différents, les valeurs Unity divergentes et vérifie
+le renvoi caméra ainsi que l'absence de répétition des messages au repos.
+
+### Réception des rafales de presets dans Unity
+
+Le récepteur OSC utilisait un tampon UDP système de seulement 4 Kio.
+Un test réseau réel avec OSCServer et les décodeurs de production a reçu
+58 messages sur 1 200 dans cette configuration. Le tampon par défaut est
+désormais de 1 Mio ; le même test reçoit 1 200 messages sur 1 200.
+Cette capacité concerne la file réseau, indépendamment de la file OSC
+consommée par Unity à chaque frame. Augmenter les délais de rappel ne répare
+pas les messages déjà perdus dans cette file réseau.
+
+`Tools/Unity/OSCReceiveBurstChecks.cs` teste cette réception sur un port
+loopback séparé. Le menu Unity **Tools > Oxipital > Validate OSC Synchronization**
+contient aussi une vérification de rafale de 1 200 messages.
+
+CameraController expose maintenant trois mesures OSCQuery :
+`renderedFieldOfView` (caméra de rendu), `activeFieldOfView` (lentille de la
+caméra Cinemachine active), et `cameraBlendActive` (transition en cours).
+La valeur `fov` du contrôleur est une consigne : sa lecture seule ne prouve
+pas que le rendu a déjà atteint cette valeur. Les mesures sont transitoires
+et ne sont pas enregistrées dans la scène ou les presets.
+
+La scène **Oxipital HDRP** et le prefab **Cameras** utilisent également FoV 25
+et followZOffset 5 comme valeurs enregistrées. Une ancienne valeur 75 dans
+la scène était restaurée à la sortie de Play, indépendamment des valeurs
+reçues pendant Play. La lentille et l'offset d'une caméra entrante sont
+maintenant initialisés avant son activation par Cinemachine.
+
+### Résolution des conteneurs dans le script Chataigne
+
+Le parseur natif de `getChild` exige un `/` initial pour un chemin composé :
+il retire le premier segment avant la recherche. Les anciens appels sans ce
+préfixe ne retrouvaient donc pas les variables et produisaient le journal
+`Child not found` à chaque interrogation des boutons.
+Les variables optionnelles sont maintenant recherchées en énumérant leurs
+conteneurs, sans appel de recherche manquant qui écrirait dans le journal.
+Les champs Unity sont résolus un segment à la fois, pour conserver aussi la
+recherche native sans distinction de casse (`hDRMultiplier`/`hdrMultiplier`).
+Les tests reproduisent l'arbre de conteneurs et refusent les anciens appels.
+La correction a été vérifiée en direct : une consigne Unity perturbée à 75
+a été rétablie automatiquement à 25 par le script, avec lentille et rendu à 25.
+
+### Positions calculées et rappel de Cascade
+
+Cascade rappelle aussi le preset Leap Motion `Force only`. Celui-ci enregistrait
+`questOrbFinal = (0.03617436, 1.52361, 0.149015)` et une ancienne
+`questForceFinal`. Leur interpolation entrait en concurrence avec les mappings
+qui calculent ces valeurs depuis la position du preset et l'offset Quest.
+Un relevé OSCQuery en Play a confirmé le déplacement vers cette ancienne position
+pendant environ quatre secondes, suivi du recentrage ajouté au rappel final.
+
+`Repair-QuestComputedPresetValues.ps1` met ces deux paramètres en mode `None`
+dans les quatre presets Leap Motion. Le code natif de Chataigne ignore ce mode
+pendant le rappel ; une mise à jour des valeurs du preset conserve son mode.
+Les réglages artistiques, offsets et références restent inchangés. Le script
+`Test-QuestComputedPresetValues.ps1` vérifie les huit modes puis annule ces seules
+modifications en mémoire pour comparer intégralement les deux projets.
+
+Le recentrage supplémentaire en fin de rappel a été retiré du bridge : les
+positions passent de nouveau par les mappings et leur lissage, avec les
+réapplications générales déjà existantes. Recharger la session Synchronized
+est nécessaire pour prendre en compte les modes `None` modifiés dans le fichier.
+
+Après rechargement, la transition Méduse → Cascade a été confirmée visuellement
+sans détour vers l'offset ni saut final. Le nouveau relevé OSCQuery se termine
+à `(0, 0, 0)` et ne reproduit plus le palier à `Y = 1.52361` observé avant
+la correction. FoV rendu 25, Zoffset 5, un émetteur et suivi des orbes désactivé.
+
+Force 1 expose aussi une CV `Linear Direction`, transmise au champ
+`StandardForceGroup.linearDirection` (vecteur global indépendant de la rotation
+du dancer). Cascade enregistre `(0, 1, 0)` pour pousser vers le haut ; les autres
+presets Force 1 enregistrent `(0, 0, 0)`, qui conserve la direction du dancer.
+Le mapping `Force 1 Linear Direction` respecte le mode d'édition Unity.
+`Add-ForceLinearDirection.ps1` installe cette extension et
+`Test-ForceLinearDirection.ps1` vérifie que les autres données, notamment les
+rotations, restent identiques. La valeur `(0, 1, 0)` a été vérifiée dans Unity
+par OSCQuery après un envoi direct ; le rappel du fichier modifié nécessite
+de recharger la session Chataigne.
+
+Le journal du 6 novembre affichait aussi des recherches répétées de deux champs
+absents de `StandardForceGroup` : `emitterScale` appartient aux orbes et
+`curlDrag` est un ancien contrôle sans champ Unity correspondant. Le bridge
+conserve les valeurs sauvegardées pour compatibilité mais ignore ces deux
+envois sur les forces avant la recherche OSCQuery. Le champ `linearDirection`
+des forces et `emitterScale` des orbes continuent d'être envoyés. Le test
+`Test-BridgeSupportedFields.js` couvre cette distinction. Les anciens liens
+cassés des modules inactifs ne sont pas supprimés par cette correction.
+
+Dans Tourbillon, Force 1 conserve la composante orthoradiale pilotée par le
+pinceau ; ses intensités Curl et Perlin sont nulles. Le preset Tourbillon de
+Force 2 reprend les réglages Curl/Perlin ainsi que l'intensité, le rayon et les
+facteurs intérieur/extérieur du preset Force 1 d'origine, avec les autres
+composantes de force nulles. Il reste indépendant du pinceau lié au groupe 1.
+Le bouton Tourbillon rappelle les deux presets de force avec la même transition
+de quatre secondes, avant la réapplication générale existante. Les autres
+boutons de scène rappellent immédiatement `Tourbillon Background Off` sur Force
+2 pour éviter de conserver cette turbulence. Les autres presets Force 2 sont
+conservés. `Split-TourbillonForces.ps1` effectue cette séparation ;
+`Test-TourbillonForces.ps1` contrôle les réglages, les rappels et la préservation
+intégrale des données hors de ce changement.

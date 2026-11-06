@@ -221,6 +221,18 @@ hors Play et sauvegarder la scène. Le moniteur ne sauvegarde pas ces réglages.
 
 ## Deux orbes et presets Chataigne
 
+**Two Hands Forces** crée deux sources identiques dans le Force Group choisi,
+une par main, quand **Control Force Position** est actif. Rayon, orientation et
+paramètres du preset restent partagés. Désactiver Two Hands Forces remet la
+source unique au centre des mains.
+
+**Single Hand Only** ne concerne que les modes Two Hand Orbs et Two Hands Forces.
+Il garde la première main suivie active et passe à l'autre si elle est perdue.
+Si les deux arrivent simultanément, la gauche est choisie. Le même choix sert
+aux forces et aux orbes ; l'instance inactive a une intensité nulle.
+Le mode à une seule source centrée conserve son fonctionnement habituel.
+Les interrupteurs sont disponibles dans le moniteur et dans les presets Kinect.
+
 Avec **Control Orb Position** actif, **Two Hand Orbs** utilise deux éléments du
 même Orb Group : une émission suit chaque main, avec les paramètres partagés du
 groupe. Chaque main active son propre élément, même si l'autre est absente,
@@ -240,3 +252,20 @@ L'intensité reçue de Chataigne est actualisée pendant le suivi. Relâcher le
 contrôleur restaure ses propriétés de geste sans réappliquer tous les anciens
 paramètres de force par-dessus le preset Chataigne courant. Le bouton Deux orbes
 est aussi disponible dans le moniteur, et l'overlay affiche les positions G/D.
+# Sources fixes et perte des mains
+
+La présence des mains ne conditionne l'activation d'une force que lorsque
+`Control Force Position` est activé. Une force fixe conserve sa chorégraphie et
+reste active sans mains ; les paramètres gestuels encore activés conservent
+leur dernière valeur valide. `Brush Enabled`, Strength et l'intensité du preset
+restent applicables. Avec les paramètres gestuels désactivés, un ancien facteur
+gestuel nul ne doit pas bloquer la force. Un input manquant ne coupe pas une
+force fixe. Les orbes ne reçoivent déjà de masque par main que lorsque
+`Control Orb Position` est actif.
+
+Validation : `Tools > Oxipital > Validate Brush Tracking` en Play teste sur des
+objets isolés les forces fixes sans mains, la coupure des forces qui suivent les
+mains, le retour au mode fixe, la conservation de la chorégraphie et l'absence
+d'input. Le test ne démarre ni capture Kinect ni buffers GPU. Compiler ce test
+ne remplace pas son exécution dans Unity.
+

@@ -1,4 +1,5 @@
 var presetPushAt = -1, presetFinalAt = -1;
+var nextTwoHandControlPoll = 0, lastTwoHandControls = [null, null];
 var numForceGroupsParam = local.parameters.setup.numForceGroups;
 var numOrbGroupsParam = local.parameters.setup.numOrbGroups;
 var numMacrosParam = local.parameters.setup.numMacros;
@@ -48,7 +49,7 @@ var danceGroupParameters = {
 	},
 	"Dancer": {
 		"Dancer Size": { "type": "float", "default": 1, "min": 0, "max": 20 },
-		"Emitter Scale": { "type": "p3d", "default": [1, 1, 1] },
+		"Emitter Scale": { "type": "p3d", "default": [1, 1, 1], "orbOnly": true },
 		"Dancer Hyper Size": { "type": "float", "default": 0, "min": 0, "max": 1 },
 		"Dancer Size Spread": { "type": "float", "default": 0, "min": 0, "max": 1 },
 		"Dancer Weight Size Factor": { "type": "float", "default": 0, "min": 0, "max": 1 },
@@ -92,7 +93,8 @@ var forceGroupParameters = {
 	"Turbulence Curl": {
 		"Curl Intensity": { "type": "float", "default": 0, "min": 0, "max": 1 },
 		"Curl Frequency": { "type": "float", "default": 0, "min": 0, "max": 5 },
-		"Curl Drag": { "type": "float", "default": 0, "min": 0, "max": 1 },
+		// Legacy saved control; StandardForceGroup has no curlDrag field.
+		"Curl Drag": { "type": "float", "default": 0, "min": 0, "max": 1, "unsupported": true },
 		"Curl Octaves": { "type": "float", "default": 1, "min": 1, "max": 8 },
 		"Curl Roughness": { "type": "float", "default": 0, "min": 0, "max": 1 },
 		"Curl Lacunarity": { "type": "float", "default": 0, "min": 0, "max": 1 },
@@ -173,6 +175,7 @@ function init() {
 function update(deltaTime)
 {
 	processPresetPushes();
+	processTwoHandControls();
 	if (syncRequestTime >= 0 && util.getTime() >= syncRequestTime) {
 		syncRequestTime = -1;
 		structureReceived = false;
@@ -320,6 +323,7 @@ function updateParam(index, groupName, paramName, sourceParam, parameters, items
 
 	var paramProps = targetParams[groupName][paramName];
 	if (paramProps == null) return;
+	if (paramProps.unsupported || (paramProps.orbOnly && parameters == forceGroupParameters)) return;
 
 	var item = items[index];
 	if (item == null) return;
@@ -703,8 +707,15 @@ function updateUnityParam(managerName, itemName, paramPath, value, forceSend) {
     if (manager == null) return;
     var item = manager.getChild(itemName);
     if (item == null) return;
-    var param = item.getChild(paramPath);
-    if (param == null) return;
+    // Resolve one segment at a time. Native compound-address lookup drops
+    // the first segment without / and resolves the leaf case-sensitively;
+    // single-name getChild preserves case-insensitive field matching.
+    var resolvedParts = paramPath.split("/");
+    var param = item;
+    for (var p = 0; p < resolvedParts.length; p++) {
+        param = param.getChild(resolvedParts[p]);
+        if (param == null) return;
+    }
     if (forceSend) {
         // The resolved OSCQuery control retains Unity's exact field spelling
         // (e.g. hdrMultiplier vs the bridge UI's hDRMultiplier).
@@ -718,10 +729,67 @@ function updateUnityParam(managerName, itemName, paramPath, value, forceSend) {
     } else param.set(value);
 }
 
-function getKinectShowValue(name) {
+function findShowContainer(parent, name) {
+    if (parent == null) return null;
+    var children = parent.getContainers();
+    if (children == null) return null;
+    var wanted = name.toLowerCase();
+    for (var i = 0; i < children.length; i++) {
+        if (children[i].name.toLowerCase() == wanted) return children[i];
+    }
+    return null;
+}
+
+function getShowVariableValue(group, name) {
     if (typeof root == "undefined") return null;
-    var control = root.getChild("customVariables/kinect/variables/" + name + "/" + name);
-    return control == null ? null : control.get();
+    // Enumerate optional containers instead of getChild: a missing variable
+    // must not print "Child not found" on every 10 Hz control poll. Native
+    // getChild also requires a leading / for any multi-segment address.
+    var customVariables = findShowContainer(root, "customVariables");
+    var showGroup = findShowContainer(customVariables, group);
+    var variables = findShowContainer(showGroup, "variables");
+    var variable = findShowContainer(variables, name);
+    if (variable == null && name == "twoHandForces") variable = findShowContainer(variables, "twoHandsForces");
+    if (variable == null && name == "singleHandAtATime") variable = findShowContainer(variables, "singleHandOnly");
+    if (variable == null) return null;
+    // A Custom Variable's container short name is stable, but Chataigne
+    // regenerates its value's short name from the displayed label on load.
+    var controls = variable.getControllables();
+    for (var i = 0; i < controls.length; i++) {
+        if (controls[i].name == name || controls[i].niceName == variable.niceName)
+            return controls[i].get();
+    }
+    return null;
+}
+
+function getKinectShowValue(name) {
+    return getShowVariableValue("kinect", name);
+}
+
+function processTwoHandControls() {
+    if (isUnityEditing() || util.getTime() < nextTwoHandControlPoll) return;
+    nextTwoHandControlPoll = util.getTime() + 0.1;
+    var names = ["twoHandForces", "singleHandAtATime"];
+    for (var i = 0; i < names.length; i++) {
+        var value = getKinectShowValue(names[i]);
+        if (value != null && value != lastTwoHandControls[i]) {
+            local.send("/Ballet/Optical_Flow/TwoHandForceBrush/" + names[i], value);
+            lastTwoHandControls[i] = value;
+        }
+    }
+}
+
+function pushCameraToUnity() {
+    if (isUnityEditing()) return;
+    var fov = getShowVariableValue("camera", "fieldofview");
+    var offset = getShowVariableValue("camera", "zOffset");
+    // Camera values need the same unchanged-cache bypass as group values.
+    // A restarted Unity otherwise keeps its prefab FoV (75) while the show
+    // still displays the preset's FoV (25).
+    if (fov != null && fov > 0 && fov < 180)
+        local.send("/Cameras/Camera_Controller/CameraController/fov", fov);
+    if (offset != null && offset >= 0)
+        local.send("/Cameras/Camera_Controller/CameraController/followZOffset", offset);
 }
 
 function pushKinectToUnity() {
@@ -740,7 +808,8 @@ function pushKinectToUnity() {
         ["interactionDepth", "interactionDepth"], ["useTargetDepth", "useTargetDepth"],
         ["minimumAxisDistance", "minimumAxisDistance"], ["showMonitor", "showMonitor"],
         ["showHandOverlay", "showHandOverlay"], ["invertGestureIntensity", "invertGestureIntensity"],
-        ["twoHandOrbs", "twoHandOrbs"], ["monitorScale", "monitorScale"]
+        ["twoHandOrbs", "twoHandOrbs"], ["monitorScale", "monitorScale"],
+        ["twoHandForces", "twoHandForces"], ["singleHandAtATime", "singleHandAtATime"]
     ];
     for (var i = 0; i < fields.length; i++) {
         var value = getKinectShowValue(fields[i][0]);
@@ -749,7 +818,13 @@ function pushKinectToUnity() {
     var x = getKinectShowValue("orientationOffsetX"), y = getKinectShowValue("orientationOffsetY"), z = getKinectShowValue("orientationOffsetZ");
     if (x != null && y != null && z != null) local.send(prefix + "TwoHandForceBrush/orientationOffset", [x, y, z]);
     var flow = [["debugOverlayOpacity", "OpticalFlowDebugView/overlayOpacity"],
-        ["opticalFlowIntensity", "OpticalFlowManager/intensity"], ["opticalFlowStrength", "OpticalFlowManager/strength"]];
+        ["opticalFlowIntensity", "OpticalFlowManager/intensity"], ["opticalFlowStrength", "OpticalFlowManager/strength"],
+        ["windDrag", "OpticalFlowManager/windDrag"], ["windBlend", "OpticalFlowManager/windBlend"],
+        ["flowOutputGain", "OpticalFlowProcessor/outputGain"],
+        ["minimumHandConfidence", "OpticalFlowAzureKinectInput/minimumHandConfidence"],
+        ["trackingTimeout", "OpticalFlowAzureKinectInput/trackingTimeout"],
+        ["maximumHandDepth", "OpticalFlowAzureKinectInput/maximumHandDepth"],
+        ["filterHandDepth", "OpticalFlowAzureKinectInput/filterHandDepth"]];
     for (var j = 0; j < flow.length; j++) {
         var flowValue = getKinectShowValue(flow[j][0]);
         if (flowValue != null) local.send(prefix + flow[j][1], flowValue);
@@ -768,5 +843,6 @@ function pushAllToUnity() {
     linkArrays();
     pushAllParameters(forces, forceGroupParameters, true);
     pushAllParameters(orbGroups, orbGroupParameters, true);
+    pushCameraToUnity();
     pushKinectToUnity();
 }

@@ -55,7 +55,10 @@ namespace OSCQuery.UnityOSC
 		private Thread _receiverThread;
 		private OSCPacket _lastReceivedPacket;
 		private int _sleepMilliseconds = 10;
-        private int _bufferSize = 4096;
+        // Preset recalls send hundreds of separate OSC datagrams. The old
+        // 4 KiB socket queue dropped most of a burst before the receive
+        // thread could drain it, leaving a partially applied preset.
+        private int _bufferSize = 1024 * 1024;
 		#endregion
 		
 		#region Properties

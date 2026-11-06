@@ -16,10 +16,16 @@ public class CameraController : MonoBehaviour
     public new Camera camera;
     public CinemachineBrain cinemachineBrain;
     public bool orthographic = false;
-    public float fov;
+    public float fov = 25;
     public float orthoSize = 2;
-    public float followZOffset;
+    public float followZOffset = 5;
     public float resetDuration;
+
+    // Distinguish the requested lens from the actual rendered camera and
+    // Cinemachine lens (including an in-progress camera blend).
+    [System.NonSerialized] public float renderedFieldOfView;
+    [System.NonSerialized] public float activeFieldOfView;
+    [System.NonSerialized] public bool cameraBlendActive;
 
     [Header("Camera type")]
     public CameraMovementType cameraType;
@@ -63,9 +69,9 @@ public class CameraController : MonoBehaviour
 
         if(isFullDome)
         {
-            camera.enabled = false;
+            if (camera != null) camera.enabled = false;
         }
-        else
+        else if (domeCameraRig != null && domeCameraRig.transform.parent != null)
         {
             domeCameraRig.transform.parent.gameObject.SetActive(false);
         }
@@ -106,6 +112,14 @@ public class CameraController : MonoBehaviour
         {
             c.UpdateNoiseParameter(cameraNoiseGain, cameraNoiseFrequency);
         }
+    }
+
+    void LateUpdate()
+    {
+        renderedFieldOfView = camera != null ? camera.fieldOfView : -1;
+        activeFieldOfView = _activeCamera != null && _activeCamera.virtualCamera != null
+            ? _activeCamera.virtualCamera.Lens.FieldOfView : -1;
+        cameraBlendActive = cinemachineBrain != null && cinemachineBrain.IsBlending;
     }
 
     // Movement need physics so we need to update 
@@ -172,6 +186,14 @@ public class CameraController : MonoBehaviour
         if (hadActiveCamera)
             _activeCamera.SetCameraTransform(cameraPosition, cameraRotation);
 
+        // Set the incoming lens before Cinemachine starts rendering/blending
+        // it. Waiting for FixedUpdate exposes its stale serialized FoV first.
+        if (!isFullDome)
+        {
+            _activeCamera.UpdateFOV(fov);
+            _activeCamera.UpdateOrthoSize(orthoSize);
+        }
+        _activeCamera.UpdateZOffset(followZOffset);
         _activeCamera.SetActive(true, cameraTransitionDuration);
     }
 

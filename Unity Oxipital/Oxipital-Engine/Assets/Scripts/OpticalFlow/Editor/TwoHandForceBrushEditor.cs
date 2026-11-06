@@ -62,7 +62,7 @@ namespace Oxipital.Editor
                 EditorGUILayout.ObjectField("Resolved Force Group", resolved, typeof(StandardForceGroup), true);
             using (new EditorGUI.DisabledScope(true))
                 EditorGUILayout.ObjectField("Resolved Orb Group", brush.ResolvedOrbTarget, typeof(OrbGroup), true);
-            EditorGUILayout.HelpBox("Gesture controls are independent: disabling one freezes its last value. Brush Enabled gates the force; Orb Position can remain active independently. Orb Target or Orb Manager + Orb Group Number selects the emitter group to move.", MessageType.Info);
+            EditorGUILayout.HelpBox("Gesture controls are independent: disabling one freezes its last value. Tracking loss mutes only sources whose Position control is enabled; fixed forces keep their intensity and choreography. Brush Enabled gates the force; Orb Position remains independent. Orb Target or Orb Manager + Orb Group Number selects the emitter group to move.", MessageType.Info);
             if (brush.input != null && !brush.input.bodyTracking)
                 EditorGUILayout.HelpBox("Enable Body Tracking on the Azure Kinect input.", MessageType.Warning);
             using (new EditorGUI.DisabledScope(resolved == null))

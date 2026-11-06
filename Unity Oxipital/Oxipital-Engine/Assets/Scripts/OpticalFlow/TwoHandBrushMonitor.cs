@@ -89,6 +89,8 @@ namespace Oxipital
             brush.controlOrbRadius = ControlButton("Rayon orbe", brush.controlOrbRadius);
             brush.controlOrbOrientation = ControlButton("Orientation orbe", brush.controlOrbOrientation);
             brush.twoHandOrbs = ControlButton("Deux orbes (une par main)", brush.twoHandOrbs);
+            brush.twoHandForces = ControlButton("Deux forces (une par main)", brush.twoHandForces);
+            brush.singleHandAtATime = ControlButton("Une seule main reactive a la fois", brush.singleHandAtATime);
             if (brush.controlOrbPosition || brush.controlOrbRadius)
                 GUILayout.Label(brush.ResolvedOrbTarget != null ? "Orbe : " + brush.ResolvedOrbTarget.name : "En attente Orb Group " + brush.orbGroupNumber, small);
             if (brush.ResolvedOrbTarget != null)
@@ -183,6 +185,11 @@ namespace Oxipital
             Bar("Rayon demande", brush.HandsTracked ? brush.RequestedRadius / Mathf.Max(.01f, brush.MaximumBrushRadius) : 0, Cyan,
                 brush.HandsTracked ? brush.RequestedRadius.ToString("F2") + " m" : "--");
             Bar("Activation du pinceau", brush.Activation, ActivationColor);
+            if (brush.controlForcePosition && brush.twoHandForces)
+            {
+                Bar("Activation force G", brush.LeftForceActivation, Cyan);
+                Bar("Activation force D", brush.RightForceActivation, Orange);
+            }
             GUILayout.Label("Intensite : " + brush.intensityMapping + "  |  Strength : " + brush.strength.ToString("F2"), small);
             Bar("Signal du geste", brush.GestureIntensity, Cyan);
             if (group == null) return;

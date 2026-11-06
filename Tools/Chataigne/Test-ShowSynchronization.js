@@ -11,7 +11,8 @@ function load(name) {
 }
 eval(load("isUnityEditing")); eval(load("processPresetPushes")); eval(load("handleShowSyncControl"));
 eval(load("unityOSCName")); eval(load("updateUnityParam"));
-eval(load("getKinectShowValue")); eval(load("pushKinectToUnity")); eval(load("pushAllToUnity"));
+if (source.indexOf("function findShowContainer(") >= 0) eval(load("findShowContainer"));
+eval(load("getShowVariableValue")); eval(load("getKinectShowValue")); eval(load("pushCameraToUnity")); eval(load("pushKinectToUnity")); eval(load("pushAllToUnity"));
 var now = 0, editing = false, messages = [], normalWrites = 0;
 var presetPushAt = -1, presetFinalAt = -1;
 var cachedZero = { set: function(value) {
@@ -19,7 +20,10 @@ var cachedZero = { set: function(value) {
     if (value[0] != 0 || value[1] != 0 || value[2] != 0) normalWrites++;
 }};
 var unityBallet = { niceName: "Ballet", getChild: function(manager) {
-    return { getChild: function(group) { return { getChild: function(path) { return cachedZero; } }; } };
+    return { getChild: function(group) { return { getChild: function(component) {
+        check(component.indexOf("/") < 0, "Native compound lookup would drop the component or require exact leaf case: " + component);
+        return {getChild:function(field){check(field.indexOf("/") < 0, "Expected a single field name");return cachedZero;}};
+    } }; } };
 }};
 var util = { getTime: function() { return now; } };
 var local = { parameters: { setup: {
