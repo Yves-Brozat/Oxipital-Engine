@@ -36,6 +36,8 @@ namespace Oxipital
         // crop included, so the image is never stretched.
         [Range(.1f, 20)]
         public float planeScale = 4;
+        [Tooltip("When Frame Play Area is enabled, fit the force plane to the same screen rectangle as the cropped video and hands. Uses the brush Visualization Camera, otherwise Camera.main. The plane keeps its original depth in the scene.")]
+        public bool fitPlaneToPlayArea = true;
 
         [OSCQuery.DoNotExpose]
         public FlowPlane plane;
@@ -49,6 +51,9 @@ namespace Oxipital
         bool allocated;
         bool warnedMissingShaders;
         int inputRevision;
+        FlowPlane framedPlane;
+        Vector3 savedPlanePosition, savedPlaneScale;
+        Quaternion savedPlaneRotation;
 
         public OpticalFlowSource Source => source;
         public OpticalFlowCompute Compute => compute;
@@ -67,6 +72,7 @@ namespace Oxipital
 
         void OnDisable()
         {
+            RestorePlaneFraming();
             ReleaseAll();
             if (source != null) source.SetSpoutActive(false);
             if (source != null && source.kinectInput != null) source.kinectInput.StopCapture();
@@ -75,11 +81,11 @@ namespace Oxipital
 
         void Update()
         {
-            ApplyPlaneScale();
             if (!HasShaders()) return;
 
             // Spout uses its sender size; webcam/video use their configured processing resolution.
             source.UpdateReceivedSize();
+            ApplyPlaneScale();
             int w = Mathf.Max(source.DesiredSize.x, 16);
             int h = Mathf.Max(source.DesiredSize.y, 16);
             if (allocated && w == source.Width && h == source.Height && inputRevision == source.InputRevision) return;
@@ -113,15 +119,72 @@ namespace Oxipital
         {
             FlowPlane target = plane != null ? plane : GetComponentInChildren<FlowPlane>();
             OpticalFlowSource input = source != null ? source : GetComponent<OpticalFlowSource>();
-            if (target == null || input == null) return;
+            if (target == null || input == null) { RestorePlaneFraming(); return; }
+            if (Application.isPlaying && input.framePlayArea && fitPlaneToPlayArea && FitPlaneToPlayArea(target, input)) return;
+            RestorePlaneFraming();
 
             Vector2Int size = input.DesiredSize;
-            float width = size.x * (1 - input.cropLeft - input.cropRight);
-            float height = size.y * (1 - input.cropBottom - input.cropTop);
+            Vector4 crop = input.EffectiveCrop;
+            float width = size.x * (crop.z - crop.x);
+            float height = size.y * (crop.w - crop.y);
             float aspect = width > 0 && height > 0 ? width / height : 1;
 
             Vector3 scale = new Vector3(planeScale * aspect, planeScale, 1);
             if (target.transform.localScale != scale) target.transform.localScale = scale;
+        }
+
+        bool FitPlaneToPlayArea(FlowPlane target, OpticalFlowSource input)
+        {
+            var brush = GetComponent<TwoHandForceBrush>();
+            Camera camera = brush != null ? brush.ParticleCamera : Camera.main;
+            if (camera == null || Screen.width <= 0 || Screen.height <= 0) return false;
+            var preview = GetComponent<OpticalFlowDebugView>();
+            Vector2Int size = input.DesiredSize;
+            Rect rect = preview != null ? preview.VideoScreenRect(size.x, size.y) :
+                OpticalFlowDebugView.FitScreen(Mathf.RoundToInt(Mathf.Max(.1f, input.playAreaAspect) * 10000), 10000);
+            Rect viewport = camera.rect;
+            if (!OpticalFlowVideoMapping.ScreenToViewport(rect.xMin, rect.yMin, Screen.width, Screen.height,
+                    viewport.x, viewport.y, viewport.width, viewport.height, out float u0, out float v0) ||
+                !OpticalFlowVideoMapping.ScreenToViewport(rect.xMax, rect.yMax, Screen.width, Screen.height,
+                    viewport.x, viewport.y, viewport.width, viewport.height, out float u1, out float v1) || u1 <= u0 || v1 <= v0) return false;
+
+            if (framedPlane != target)
+            {
+                RestorePlaneFraming();
+                framedPlane = target;
+                savedPlanePosition = target.transform.localPosition;
+                savedPlaneRotation = target.transform.localRotation;
+                savedPlaneScale = target.transform.localScale;
+            }
+            Transform parent = target.transform.parent;
+            Vector3 anchor = parent != null ? parent.TransformPoint(savedPlanePosition) : savedPlanePosition;
+            float depth = Vector3.Dot(anchor - camera.transform.position, camera.transform.forward);
+            if (depth <= camera.nearClipPlane)
+                depth = Mathf.Max(brush != null ? brush.interactionDepth : 10, camera.nearClipPlane + .01f);
+            // ViewportToWorldPoint supports perspective and orthographic cameras,
+            // including camera viewport offsets. The quad remains at particle depth.
+            Vector3 bottomLeft = camera.ViewportToWorldPoint(new Vector3(u0, v0, depth));
+            Vector3 bottomRight = camera.ViewportToWorldPoint(new Vector3(u1, v0, depth));
+            Vector3 topLeft = camera.ViewportToWorldPoint(new Vector3(u0, v1, depth));
+            Transform frame = target.transform;
+            frame.SetPositionAndRotation(bottomLeft + (bottomRight - bottomLeft + topLeft - bottomLeft) * .5f, camera.transform.rotation);
+            // Compensate parent scale so a world-space metre remains a metre,
+            // including along Z where the force depth band is measured.
+            float sx = parent != null ? parent.TransformVector(frame.localRotation * Vector3.right).magnitude : 1;
+            float sy = parent != null ? parent.TransformVector(frame.localRotation * Vector3.up).magnitude : 1;
+            float sz = parent != null ? parent.TransformVector(frame.localRotation * Vector3.forward).magnitude : 1;
+            frame.localScale = new Vector3((bottomRight - bottomLeft).magnitude / Mathf.Max(sx, .0001f),
+                (topLeft - bottomLeft).magnitude / Mathf.Max(sy, .0001f), 1 / Mathf.Max(sz, .0001f));
+            return true;
+        }
+
+        void RestorePlaneFraming()
+        {
+            if (framedPlane == null) return;
+            framedPlane.transform.localPosition = savedPlanePosition;
+            framedPlane.transform.localRotation = savedPlaneRotation;
+            framedPlane.transform.localScale = savedPlaneScale;
+            framedPlane = null;
         }
 
         void ReleaseAll()

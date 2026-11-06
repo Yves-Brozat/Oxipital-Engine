@@ -59,6 +59,9 @@ namespace Oxipital
 		public float dancerLookAtMode = 0; // 0 = local, 1 = group, 2 = global
 
 		List<DancePattern> patterns;
+		// Optional live choreography, applied after the saved patterns and before
+		// packing dancer world positions into the VFX buffer.
+		internal Action positionPatternOverride;
 
 		//Graphics buffer
 
@@ -184,6 +187,7 @@ namespace Oxipital
 			{
 				p.updatePattern(this);
 			}
+			positionPatternOverride?.Invoke();
 
 
 			foreach (var d in items)

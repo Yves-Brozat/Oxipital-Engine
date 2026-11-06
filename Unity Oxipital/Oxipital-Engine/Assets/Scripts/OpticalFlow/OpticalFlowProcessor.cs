@@ -53,6 +53,8 @@ namespace Oxipital
 
         internal void Execute(OpticalFlowSource source, RenderTexture rawFlow)
         {
+            // Motion from the old crop/zoom/flip belongs to different positions.
+            if (source.HistoryResetThisFrame) OpticalFlowUtil.Clear(trail);
             int w = source.Width;
             int h = source.Height;
 

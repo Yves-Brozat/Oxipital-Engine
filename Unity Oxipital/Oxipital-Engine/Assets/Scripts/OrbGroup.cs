@@ -307,8 +307,26 @@ namespace Oxipital
         [InBuffer(31)]
         public bool activateCollision = false;
         
-        [InBuffer(32)]
+        [InBuffer(32, true)]
+        [Tooltip("Emitter aspect ratio. The largest absolute axis is normalized to 1 for rendering; use Dancer Size for the overall radius. (1,1,1) = round; (1,0.5625,1) = 16:9 in XY.")]
         public Vector3 emitterScale = Vector3.one;
+
+        public Vector3 EffectiveEmitterScale => NormalizeEmitterScale(emitterScale);
+
+        public static Vector3 NormalizeEmitterScale(Vector3 ratio)
+        {
+            if (float.IsNaN(ratio.x) || float.IsNaN(ratio.y) || float.IsNaN(ratio.z) ||
+                float.IsInfinity(ratio.x) || float.IsInfinity(ratio.y) || float.IsInfinity(ratio.z)) return Vector3.one;
+            ratio = new Vector3(Mathf.Abs(ratio.x), Mathf.Abs(ratio.y), Mathf.Abs(ratio.z));
+            float largest = Mathf.Max(ratio.x, Mathf.Max(ratio.y, ratio.z));
+            return largest > .000001f ? ratio / largest : Vector3.one;
+        }
+
+        protected override object getBufferValueAtIndex(int index)
+        {
+            // DancerGroup passes the absolute buffer index (two header floats).
+            return index == 34 ? EffectiveEmitterScale : base.getBufferValueAtIndex(index);
+        }
 
         // Infinite life bookkeeping
         public int maxInfiniteParticles = 100000;

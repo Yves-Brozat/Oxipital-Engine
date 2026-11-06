@@ -13,6 +13,12 @@ eval(loadFunction("moduleParameterChanged"));
 eval(loadFunction("dataStructureEvent"));
 eval(loadFunction("onConnected"));
 eval(loadFunction("requestSync"));
+if (source.indexOf("function processPresetPushes(") >= 0) {
+    eval(loadFunction("isUnityEditing"));
+    eval(loadFunction("processPresetPushes"));
+    eval(loadFunction("handleShowSyncControl"));
+}
+var presetPushAt = -1, presetFinalAt = -1;
 var now, syncs, pushes, countsChanged, warnings;
 var structureReceived, syncRequestTime, pushOnNextStructure, countResyncRequested;
 var util = { getTime: function () { return now; } };

@@ -46,6 +46,29 @@ namespace Oxipital
         [Range(0, .45f)]
         public float cropTop = 0;
 
+        [Header("Play area framing")]
+        [Tooltip("Fit a rectangular play area inside the input crop. Image, optical flow and tracked hands share this framing; output resolution stays unchanged.")]
+        public bool framePlayArea;
+        [Min(.1f), Tooltip("Width / height of the play area. 1.333333 = 4:3 (8 m x 6 m).")]
+        public float playAreaAspect = 4f / 3f;
+        [Range(1, 4), Tooltip("Magnify a smaller sensor area to cover the play area. Increase until the dark sensor corners are outside the frame.")]
+        public float playAreaZoom = 1;
+        [Range(0, 1)] public float playAreaCenterX = .5f;
+        [Range(0, 1)] public float playAreaCenterY = .5f;
+
+        public Vector4 EffectiveCrop
+        {
+            get
+            {
+                float left = cropLeft, right = cropRight, bottom = cropBottom, top = cropTop;
+                if (framePlayArea)
+                    OpticalFlowVideoMapping.Frame(DesiredSize.x / (float)Mathf.Max(1, DesiredSize.y),
+                        Mathf.Max(.1f, playAreaAspect), playAreaZoom, playAreaCenterX, playAreaCenterY,
+                        ref left, ref right, ref bottom, ref top);
+                return new Vector4(left, bottom, 1 - right, 1 - top);
+            }
+        }
+
         [Header("New Frame Detection")]
         public ChangeDetection changeDetection = ChangeDetection.GPUDiff;
         [Range(0, .01f)]
@@ -120,6 +143,7 @@ namespace Oxipital
         public RenderTexture Input => input;
         public RenderTexture Current => current;
         public RenderTexture Previous => previous;
+        internal bool HistoryResetThisFrame { get; private set; }
         public GraphicsBuffer State => state;
         public int Width { get; private set; }
         public int Height { get; private set; }
@@ -202,7 +226,7 @@ namespace Oxipital
 
             // Copy with crop / mirror / flip
             Vector2 flipSign = new Vector2(mirror ? -1 : 1, flipY ? -1 : 1);
-            Vector4 crop = new Vector4(cropLeft, cropBottom, 1 - cropRight, 1 - cropTop);
+            Vector4 crop = EffectiveCrop;
             // A change of framing is not camera motion. Restart the frame comparison
             // so toggling a flip does not create a full-frame impulse.
             if (crop != previousCrop || flipSign != previousFlipSign) seedHistory = true;
@@ -216,6 +240,7 @@ namespace Oxipital
             OpticalFlowUtil.Dispatch(shader, kCopy, Width, Height);
 
             // A new source has no previous camera frame; do not interpret its first image as motion.
+            HistoryResetThisFrame = seedHistory;
             if (seedHistory)
             {
                 Graphics.CopyTexture(current, previous);

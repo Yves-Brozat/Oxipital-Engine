@@ -4,6 +4,22 @@ namespace Oxipital
     // before mapping into the cropped source rectangle.
     internal static class OpticalFlowVideoMapping
     {
+        // Fit a rectangle of the requested display aspect inside the existing crop,
+        // then zoom around a movable centre without sampling outside that crop.
+        public static void Frame(float sourceAspect, float aspect, float zoom, float centerX, float centerY,
+            ref float left, ref float right, ref float bottom, ref float top)
+        {
+            float width = 1 - left - right, height = 1 - bottom - top;
+            if (width <= 0 || height <= 0 || sourceAspect <= 0 || aspect <= 0) return;
+            float w = System.Math.Min(width, height * aspect / sourceAspect) / System.Math.Max(1, zoom);
+            float h = w * sourceAspect / aspect;
+            float x = left + width * centerX, y = bottom + height * centerY;
+            x = System.Math.Max(left + w / 2, System.Math.Min(1 - right - w / 2, x));
+            y = System.Math.Max(bottom + h / 2, System.Math.Min(1 - top - h / 2, y));
+            left = x - w / 2; right = 1 - x - w / 2;
+            bottom = y - h / 2; top = 1 - y - h / 2;
+        }
+
         public static bool SourceToOutput(ref float u, ref float v, float left, float right, float bottom, float top, bool mirror, bool flipY)
         {
             float width = 1 - left - right, height = 1 - bottom - top;

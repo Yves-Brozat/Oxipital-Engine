@@ -62,6 +62,14 @@ namespace Oxipital
                 Vector2 max = RectTransformUtility.WorldToScreenPoint(camera, corners[2]);
                 return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
             }
+            var source = GetComponent<OpticalFlowSource>();
+            if (source != null && source.framePlayArea)
+            {
+                // Texture storage keeps its processing size; display the selected
+                // play area at its physical aspect instead of stretching it.
+                width = Mathf.RoundToInt(Mathf.Max(.1f, source.playAreaAspect) * 10000);
+                height = 10000;
+            }
             return fullscreen ? FitScreen(width, height) : new Rect(10, 10, displayWidth, displayWidth * height / (float)Mathf.Max(1, width));
         }
 

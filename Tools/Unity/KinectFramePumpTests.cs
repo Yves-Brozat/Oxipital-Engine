@@ -142,6 +142,62 @@ public static class KinectFramePumpTests
         Require(OpticalFlowVideoMapping.ScreenToViewport(500, 200, 1000, 1000, .25f, 0, .5f, 1, out u, out v) &&
             Math.Abs(u - .5f) < .0001f && Math.Abs(v - .2f) < .0001f, "Sub-viewport camera mapping changed image coordinates");
         Require(!OpticalFlowVideoMapping.ScreenToViewport(0, 0, 1000, 1000, 0, 0, 0, 1, out u, out v), "Zero-width camera viewport was accepted");
-        return "PASS: capture lifecycle, native ABI, NFOV/WFOV, crop/mirror mapping and particle-camera viewport mapping";
+        // Force-plane corners and tracked hands use the same screen -> camera
+        // conversion: central 4:3 play area inside a 1920x1080 output.
+        Require(OpticalFlowVideoMapping.ScreenToViewport(240, 0, 1920, 1080, 0, 0, 1, 1, out u, out v) &&
+            Math.Abs(u - .125f) < .0001f && Math.Abs(v) < .0001f, "Force plane lost the left pillarbox offset");
+        Require(OpticalFlowVideoMapping.ScreenToViewport(1680, 1080, 1920, 1080, 0, 0, 1, 1, out u, out v) &&
+            Math.Abs(u - .875f) < .0001f && Math.Abs(v - 1) < .0001f, "Force plane covered the cropped side margin");
+        Require(OpticalFlowVideoMapping.ScreenToViewport(240, 0, 1920, 1080, .125f, 0, .75f, 1, out u, out v) &&
+            Math.Abs(u) < .0001f && Math.Abs(v) < .0001f, "Force plane applied camera viewport offsets twice");
+        Require(OpticalFlowVideoMapping.ScreenToViewport(1680, 1080, 1920, 1080, .125f, 0, .75f, 1, out u, out v) &&
+            Math.Abs(u - 1) < .0001f && Math.Abs(v - 1) < .0001f, "Force plane failed to fill a 4:3 camera viewport");
+        float left = 0, right = 0, bottom = 0, top = 0;
+        OpticalFlowVideoMapping.Frame(1, 4f / 3f, 2, .5f, .5f, ref left, ref right, ref bottom, ref top);
+        Require(Math.Abs(left - .25f) < .0001f && Math.Abs(right - .25f) < .0001f &&
+            Math.Abs(bottom - .3125f) < .0001f && Math.Abs(top - .3125f) < .0001f, "Square sensor did not produce a centred zoomed 4:3 rectangle");
+        u = left; v = bottom;
+        Require(OpticalFlowVideoMapping.SourceToOutput(ref u, ref v, left, right, bottom, top, false, false) &&
+            Math.Abs(u) < .0001f && Math.Abs(v) < .0001f, "Play-area corner did not reach display corner");
+        left = .1f; right = .2f; bottom = .05f; top = .1f;
+        OpticalFlowVideoMapping.Frame(640f / 576, 4f / 3f, 1.5f, 0, 1, ref left, ref right, ref bottom, ref top);
+        Require(left >= .0999f && right >= .1999f && bottom >= .0499f && top >= .0999f,
+            "Shifted play area escaped existing crop");
+        Require(Math.Abs((1 - left - right) * (640f / 576) / (1 - bottom - top) - 4f / 3f) < .0001f,
+            "Shifted NFOV play area changed 4:3 aspect");
+        var hands = new AzureHandFrame {
+            HasBody = true,
+            Left = new AzureBodyJoint { X = -100, Y = 50, Z = 2500, Confidence = 2 },
+            Right = new AzureBodyJoint { X = 100, Y = 50, Z = 1500, Confidence = 0 }
+        };
+        Require(AzureHandTracking.Evaluate(hands, hands.Left, true, 2, false, .5f, 4) == AzureHandRejection.None,
+            "Reliable left hand at 2.5 m was rejected because right hand was missing");
+        Require(AzureHandTracking.Evaluate(hands, hands.Right, true, 2, false, .5f, 4) == AzureHandRejection.LowConfidence,
+            "Unreliable right hand was accepted");
+        hands.Right.Confidence = 2; hands.Left.Confidence = 0;
+        Require(AzureHandTracking.Evaluate(hands, hands.Right, true, 2, false, .5f, 4) == AzureHandRejection.None,
+            "Reliable right hand was rejected because left hand was missing");
+        Require(AzureHandTracking.Evaluate(hands, hands.Right, false, 2, false, .5f, 4) == AzureHandRejection.StaleFrame,
+            "Stale tracking was accepted");
+        hands.Left.Confidence = 1;
+        Require(AzureHandTracking.Evaluate(hands, hands.Left, true, 1, false, .5f, 4) == AzureHandRejection.None,
+            "Adjustable low confidence threshold was ignored");
+        hands.Left.Confidence = 2;
+        Require(AzureHandTracking.Evaluate(hands, hands.Left, true, 2, true, 1, 2) == AzureHandRejection.OutsideDepthRange &&
+            AzureHandTracking.Evaluate(hands, hands.Right, true, 2, true, 1, 2) == AzureHandRejection.None,
+            "Depth filtering did not evaluate each hand independently");
+        foreach (float depth in new[] { 1000f, 2000f })
+        {
+            hands.Left.Z = depth;
+            Require(AzureHandTracking.Evaluate(hands, hands.Left, true, 2, true, 1, 2) == AzureHandRejection.None,
+                "Hand at depth boundary was rejected");
+        }
+        hands.Left.Z = float.NaN;
+        Require(AzureHandTracking.Evaluate(hands, hands.Left, true, 2, false, .5f, 4) == AzureHandRejection.InvalidPosition,
+            "Non-finite hand position was accepted");
+        hands.HasBody = false;
+        Require(AzureHandTracking.Evaluate(hands, hands.Right, true, 2, false, .5f, 4) == AzureHandRejection.NoBody,
+            "Missing body retained an active hand");
+        return "PASS: capture lifecycle, native ABI, NFOV/WFOV, crop/mirror mapping, zoomed 4:3 play area, independent hands, confidence, freshness and depth filtering";
     }
 }

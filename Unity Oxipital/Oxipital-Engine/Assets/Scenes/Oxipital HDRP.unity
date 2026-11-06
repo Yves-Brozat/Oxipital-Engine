@@ -134,43 +134,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 664430385}
   m_LocalEulerAnglesHint: {x: 17.09, y: -33.551, z: -128.641}
---- !u!84 &23464307
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_IsAlphaChannelOptional: 0
-  serializedVersion: 6
-  m_Width: 1920
-  m_Height: 1080
-  m_AntiAliasing: 1
-  m_MipCount: -1
-  m_DepthStencilFormat: 90
-  m_ColorFormat: 4
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 1
-  m_UseDynamicScale: 0
-  m_UseDynamicScaleExplicit: 0
-  m_BindMS: 0
-  m_EnableCompatibleFormat: 1
-  m_EnableRandomWrite: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
-  m_ShadowSamplingMode: 2
 --- !u!4 &45846872
 Transform:
   m_ObjectHideFlags: 0
@@ -1179,6 +1142,69 @@ MonoBehaviour:
   roll1D: 0
   directionnalDrag: 0
   angularDrag: 0
+--- !u!1001 &580449029
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 534215612}
+    m_Modifications:
+    - target: {fileID: 3508123202921719781, guid: eb2debe5174788c42846737cbaaeb47a, type: 3}
+      propertyPath: m_Name
+      value: Optical Flow
+      objectReference: {fileID: 0}
+    - target: {fileID: 5540847596130008035, guid: eb2debe5174788c42846737cbaaeb47a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.22279
+      objectReference: {fileID: 0}
+    - target: {fileID: 5540847596130008035, guid: eb2debe5174788c42846737cbaaeb47a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.18949
+      objectReference: {fileID: 0}
+    - target: {fileID: 5540847596130008035, guid: eb2debe5174788c42846737cbaaeb47a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5540847596130008035, guid: eb2debe5174788c42846737cbaaeb47a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5540847596130008035, guid: eb2debe5174788c42846737cbaaeb47a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5540847596130008035, guid: eb2debe5174788c42846737cbaaeb47a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5540847596130008035, guid: eb2debe5174788c42846737cbaaeb47a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5540847596130008035, guid: eb2debe5174788c42846737cbaaeb47a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5540847596130008035, guid: eb2debe5174788c42846737cbaaeb47a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5540847596130008035, guid: eb2debe5174788c42846737cbaaeb47a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects:
+    - {fileID: 5432360622573078792, guid: eb2debe5174788c42846737cbaaeb47a, type: 3}
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: eb2debe5174788c42846737cbaaeb47a, type: 3}
+--- !u!4 &580449030 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5540847596130008035, guid: eb2debe5174788c42846737cbaaeb47a, type: 3}
+  m_PrefabInstance: {fileID: 580449029}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &587745292
 GameObject:
   m_ObjectHideFlags: 0
@@ -1414,6 +1440,43 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!84 &606777067
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 6
+  m_Width: 1920
+  m_Height: 1080
+  m_AntiAliasing: 1
+  m_MipCount: -1
+  m_DepthStencilFormat: 90
+  m_ColorFormat: 4
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 1
+  m_UseDynamicScale: 0
+  m_UseDynamicScaleExplicit: 0
+  m_BindMS: 0
+  m_EnableCompatibleFormat: 1
+  m_EnableRandomWrite: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+  m_ShadowSamplingMode: 2
 --- !u!1 &615724513
 GameObject:
   m_ObjectHideFlags: 0
@@ -3557,55 +3620,6 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   lightOverride: {fileID: 0}
---- !u!1 &1341756923
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1341756924}
-  - component: {fileID: 1341756925}
-  m_Layer: 0
-  m_Name: Flow Plane
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1341756924
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1341756923}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 7.245283, y: 6, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1480724087}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1341756925
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1341756923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf665eea44db569429aaed1ea966a09f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.FlowPlane
-  showWireframe: 0
-  showDepthBand: 0
-  wireframeColor: {r: 0, g: 1, b: 1, a: 1}
-  wireframeIntensity: 1
-  lineWidth: 0.02
 --- !u!1 &1393603959
 GameObject:
   m_ObjectHideFlags: 0
@@ -4132,7 +4146,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 15671
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 23464307}
+  m_TargetTexture: {fileID: 606777067}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
@@ -4347,345 +4361,6 @@ MonoBehaviour:
   neutralView: {x: 0, y: 0, z: 0}
   calibrationBlendTime: 1
   centerPosition: {x: 0, y: 0, z: 0}
---- !u!1 &1480724086
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1480724087}
-  - component: {fileID: 1480724095}
-  - component: {fileID: 1480724094}
-  - component: {fileID: 1480724093}
-  - component: {fileID: 1480724092}
-  - component: {fileID: 1480724091}
-  - component: {fileID: 1480724090}
-  - component: {fileID: 1480724089}
-  - component: {fileID: 1480724088}
-  - component: {fileID: 1480724096}
-  - component: {fileID: 1480724097}
-  - component: {fileID: 1480724098}
-  - component: {fileID: 1480724099}
-  m_Layer: 0
-  m_Name: Optical Flow
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1480724087
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480724086}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1341756924}
-  m_Father: {fileID: 534215612}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1480724088
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480724086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f94af7806f2c3984fadf04729030d46c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowTestSource
-  followMouse: 1
-  autoSpeed: 0.5
-  radius: 0.15
-  softness: 0.5
-  frameRate: 30
-  velocity: {x: 0, y: 0}
---- !u!114 &1480724089
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480724086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32728749ec1be524bb1c60462cda0fc4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowDebugView
-  view: 1
-  gain: 1
-  displayWidth: 320
-  fullscreen: 1
-  overlayOpacity: 0.013
-  transparentBackground: 1
-  planeView: 1
-  followInputOrientation: 1
-  planeOpacity: 0.8
-  planeBrightness: 1
-  target: {fileID: 0}
-  planeMaterial: {fileID: 2100000, guid: e61872e83fb94ae41aa294f8c5b6bf75, type: 2}
---- !u!114 &1480724090
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480724086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f083a829f268ef4aa49bed4a1ea22d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowMetrics
-  smoothing: 0.8
-  motionGain: 10
-  gestureThreshold: 0.5
-  gestureCooldown: 0.5
-  motionAmount: 0
-  averageDirection: {x: 0, y: 0}
-  averageDirectionWorld: {x: 0, y: 0, z: 0}
-  gesture: 0
-  gestureCount: 0
---- !u!114 &1480724091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480724086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ae1bbd0d04075444b71f90ceccf4d1f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowManager
-  forceEnabled: 1
-  intensity: 1
-  strength: 20
-  depthBand: 5
-  windBlend: 0.437
-  windSpeed: 5.63
-  windDrag: 6.89
-  planeScale: 6
-  plane: {fileID: 1341756925}
---- !u!114 &1480724092
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480724086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 508faa5851d66364fbf7fe238c1981f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowProcessor
-  trailWeight: 0.9
-  blurRadius: 3
-  blurInFeedback: 0
-  outputGain: 1
-  maxLength: 1
-  shader: {fileID: 7200000, guid: 45d9cf7267441d04e873519de2035aef, type: 3}
---- !u!114 &1480724093
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480724086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 959033d1b13030847ae097d1b9daff5f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowCompute
-  algorithm: 0
-  preBlur: 1
-  offset: 3
-  lambda: 0.01
-  gradientGain: 3
-  window: 5
-  lucasKanadeGain: 0.25
-  spoutFlowGain: 1
-  threshold: 0.05
-  power: 1
-  shader: {fileID: 7200000, guid: 7efb291f6ea442144b02c3e6b954ce8b, type: 3}
---- !u!114 &1480724094
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480724086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ec3f014c43e98b43be7fb1464d8b0ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowSource
-  mode: 6
-  spoutName: OxipitalFlow
-  useTestSource: 0
-  videoInput: {fileID: 1480724096}
-  kinectInput: {fileID: 1480724097}
-  azureKinectInput: {fileID: 1480724098}
-  mirror: 1
-  flipY: 0
-  invertX: 0
-  invertY: 0
-  cropLeft: 0
-  cropRight: 0
-  cropBottom: 0
-  cropTop: 0
-  changeDetection: 0
-  changeThreshold: 0.0001
-  fixedRate: 30
-  staleTimeout: 0.1
-  shader: {fileID: 7200000, guid: 506bf7bbf84de9a4894ca2e28587ace0, type: 3}
-  receiver: {fileID: 1480724095}
-  testSource: {fileID: 1480724088}
---- !u!114 &1480724095
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480724086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62f7dec0b00674947bc631624c21970a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Klak.Spout.Runtime::Klak.Spout.SpoutReceiver
-  _sourceName: OxipitalFlow
-  _targetTexture: {fileID: 0}
-  _targetRenderer: {fileID: 0}
-  _targetMaterialProperty: 
-  _resources: {fileID: 11400000, guid: f449ebbe2051c2e4d993eaa773a410de, type: 2}
---- !u!114 &1480724096
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480724086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b02ce7ea399e4e4d9debceba209d8b20, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowVideoInput
-  deviceName: Kinect V2 Video Sensor
-  cameraWidth: 1280
-  cameraHeight: 720
-  cameraFrameRate: 30
-  clip: {fileID: 0}
-  videoPath: 
-  loop: 1
-  playbackSpeed: 1
-  videoBlend: 0.5
-  processingWidth: 320
-  recordingFrameRate: 15
-  jpegQuality: 85
-  maxRecordingSeconds: 120
-  playRecordingOnStop: 1
-  showControls: 0
-  lastRecordingPath: 
---- !u!114 &1480724097
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480724086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef5b5161398549b9b3ab4a0b39ba9370, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowKinectInput
-  stream: 0
-  processingWidth: 256
-  infraredGain: 4
---- !u!114 &1480724098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480724086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4f49e3358b7464c905135d2f51050c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowAzureKinectInput
-  stream: 0
-  processingWidth: 256
-  infraredGain: 128
-  deviceIndex: 0
-  depthMode: 1
-  bodyTracking: 1
-  bodyTrackingGpu: 0
-  bodyModelPath: 
-  minimumHandConfidence: 2
-  trackingTimeout: 0.3
---- !u!114 &1480724099
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1480724086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97e0e0e5307d4a35bbc8671eefd92683, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Oxipital.TwoHandForceBrush
-  input: {fileID: 1480724098}
-  target: {fileID: 0}
-  forceManager: {fileID: 1559722774}
-  forceGroupNumber: 1
-  controlForcePosition: 1
-  controlBrushParameters: 1
-  controlForceOrientation: 0
-  controlOrbPosition: 0
-  controlOrbRadius: 0
-  orbRadiusMultiplier: 1
-  orientationOffset: {x: 0, y: 0, z: 90}
-  orbTarget: {fileID: 0}
-  orbManager: {fileID: 0}
-  orbGroupNumber: 1
-  sensorOrigin: {fileID: 0}
-  positionMapping: 0
-  visualizationCamera: {fileID: 0}
-  interactionPlane: {fileID: 0}
-  useTargetDepth: 1
-  interactionDepth: 10
-  brushes:
-  - {fileID: 11400000, guid: b5725071c58985f4cb8ae27d587845f8, type: 2}
-  - {fileID: 11400000, guid: 773348c02f22e6c4c99bbe505c90a53a, type: 2}
-  - {fileID: 11400000, guid: cf44132384ea3c348ac095df0d6ec76b, type: 2}
-  selectedBrush: 0
-  brushEnabled: 1
-  strength: 1
-  intensityMapping: 0
-  intensityDistanceRange: {x: 0.1, y: 1}
-  invertGestureIntensity: 0
-  radiusMultiplier: 0.5
-  sizeMultiplier: 1
-  minimumRadius: 0.05
-  maximumRadius: 3
-  minimumAxisDistance: 0.08
-  smoothingSeconds: 0.08
-  activationFadeSeconds: 0.12
-  orientAlongHands: 1
-  driveLinearDirection: 1
-  showMonitor: 1
-  monitorScale: 1.5
-  showHandOverlay: 1
-  overlayProjection: 0
 --- !u!1 &1487749451
 GameObject:
   m_ObjectHideFlags: 0
@@ -4911,17 +4586,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1491886275}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1559722774 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2374822408208879712, guid: 2d8ae6407d50bd54f89baf6a52091c8a, type: 3}
-  m_PrefabInstance: {fileID: 1740264274}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2e9e73f61ddbd4d8b3e10c466c948c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1575622342
 GameObject:
   m_ObjectHideFlags: 0
@@ -5255,7 +4919,7 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2530438436232717069, guid: 2d8ae6407d50bd54f89baf6a52091c8a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1480724087}
+      addedObject: {fileID: 580449030}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d8ae6407d50bd54f89baf6a52091c8a, type: 3}
 --- !u!1 &1757060406
@@ -5342,7 +5006,7 @@ MonoBehaviour:
   _keepAlpha: 0
   _captureMethod: 2
   _sourceCamera: {fileID: 0}
-  _sourceTexture: {fileID: 23464307}
+  _sourceTexture: {fileID: 606777067}
   _resources: {fileID: 11400000, guid: f449ebbe2051c2e4d993eaa773a410de, type: 2}
 --- !u!114 &1783646959
 MonoBehaviour:

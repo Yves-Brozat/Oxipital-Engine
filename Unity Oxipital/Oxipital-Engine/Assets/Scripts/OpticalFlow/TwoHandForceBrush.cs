@@ -9,6 +9,9 @@ namespace Oxipital
         public enum IntensityMapping { Manual, HandDistance }
         public enum OverlayProjection { OpticalFlowVideo, SceneCamera }
         public enum PositionMapping { CameraPlane, SensorWorld }
+        // OSCQuery excludes MonoBehaviour.enabled; expose an explicit switch so
+        // external control can release the groups cleanly through OnDisable.
+        public bool remoteControlEnabled { get => enabled; set => enabled = value; }
         [OSCQuery.DoNotExpose] public OpticalFlowAzureKinectInput input;
         [Tooltip("Use a dedicated Force Group with a valid dancer prefab. The brush owns its transform, radius and activation.")]
         [OSCQuery.DoNotExpose] public StandardForceGroup target;
@@ -22,6 +25,9 @@ namespace Oxipital
         public bool controlForceOrientation = true;
         public bool controlOrbPosition;
         public bool controlOrbRadius;
+        public bool controlOrbOrientation;
+        [Tooltip("Use two dancers in the same Orb Group, one per hand, sharing the group's appearance and physics.")]
+        public bool twoHandOrbs;
         [Min(.01f), Tooltip("Orb radius relative to the hand-distance radius mapping. Independent of the force's position/size activation switches.")]
         public float orbRadiusMultiplier = 1;
         [Tooltip("Euler offset in degrees in the interaction camera axes (Sensor Origin axes in Sensor World). Z +/-90 turns a horizontal direction toward vertical.")]
@@ -69,11 +75,27 @@ namespace Oxipital
         public bool showMonitor = true;
         [Range(1, 3), Tooltip("Scale of the monitor text, controls and on-screen labels.")]
         public float monitorScale = 1.5f;
-        [Tooltip("Show hands, brush radius and live gauges over the particle view, even when the camera image or monitor panel is hidden.")]
+        [Tooltip("Show the geometric overlay (hands, forces and orbs) independently of the camera image or monitor panel. The top-left parameter HUD follows Show Monitor.")]
         public bool showHandOverlay = true;
+        [Tooltip("Show blue radius circles for all active force-group elements, including groups independent of hand tracking.")]
+        public bool showForceGeometry = true;
+        [OSCQuery.DoNotExpose, Tooltip("Force Group numbers visible in the geometric overlay. Independent of the group controlled by the hands.")]
+        public System.Collections.Generic.List<int> overlayForceGroups = new System.Collections.Generic.List<int> { 1 };
+        [Tooltip("Show magenta emitter outlines for all active orb-group elements, including groups independent of hand tracking.")]
+        public bool showOrbGeometry = true;
+        [OSCQuery.DoNotExpose, Tooltip("Orb Group numbers visible in the geometric overlay. Independent of the group controlled by the hands.")]
+        public System.Collections.Generic.List<int> overlayOrbGroups = new System.Collections.Generic.List<int> { 1 };
         public OverlayProjection overlayProjection = OverlayProjection.OpticalFlowVideo;
 
         public bool HandsTracked { get; private set; }
+        public bool LeftHandTracked { get; private set; }
+        public bool RightHandTracked { get; private set; }
+        public bool LeftPositionValid { get; private set; }
+        public bool RightPositionValid { get; private set; }
+        public bool AnyHandTracked => LeftHandTracked || RightHandTracked;
+        public bool AnyPositionValid => LeftPositionValid || RightPositionValid;
+        public float LeftOrbActivation => orbLeftGate;
+        public float RightOrbActivation => orbRightGate;
         public float HandDistance { get; private set; }
         public float BrushRadius { get; private set; }
         public string Status { get; private set; } = "Assign Azure Kinect input and a dedicated Force Group";
@@ -96,16 +118,28 @@ namespace Oxipital
         StandardForceGroup bound;
         OrbGroup boundOrb;
         Vector3 originalOrbPosition;
+        Quaternion originalOrbRotation;
+        bool orbOrientationWasDriven;
         float originalOrbRadius;
-        bool orbWasMoved, previousOrbTracking;
+        bool orbWasMoved;
         bool orbRadiusWasDriven, previousOrbRadiusTracking;
+        bool orbPatternOwned;
+        float savedOrbCount, savedOrbSizeSpread;
+        Vector3 orbLeftPosition, orbRightPosition;
+        float orbLeftGate, orbRightGate;
+        bool previousLeftOrbTracking, previousRightOrbTracking;
+        uint previousOrbBody;
         ForceBrushPreset original, appliedPreset;
         Vector3 originalPosition, originalScale, direction = Vector3.right, rawDirection = Vector3.right;
         Quaternion originalRotation;
         int appliedSelection = -1;
-        float gate, presetIntensity = 1;
+        float gate, presetIntensity = 1, lastWrittenIntensity = 1;
         uint previousBody;
         bool previousTracking;
+        bool forceSizeDriven, forceDirectionDriven;
+        Vector3 forcePosition;
+        bool forcePatternOwned;
+        System.Action savedForcePattern;
         OpticalFlowAzureKinectInput mappingInput;
         OpticalFlowSource mappingSource;
         OpticalFlowDebugView mappingPreview;
@@ -130,10 +164,18 @@ namespace Oxipital
             float sourceAspect = (float)input.SensorWidth / input.SensorHeight, outputAspect = (float)width / height;
             if (sourceAspect > outputAspect) v = (v - .5f) * outputAspect / sourceAspect + .5f;
             else u = (u - .5f) * sourceAspect / outputAspect + .5f;
-            if (mappingSource != null && !OpticalFlowVideoMapping.SourceToOutput(ref u, ref v,
-                mappingSource.cropLeft, mappingSource.cropRight, mappingSource.cropBottom, mappingSource.cropTop, mappingSource.mirror, mappingSource.flipY)) return false;
+            if (mappingSource != null)
+            {
+                Vector4 crop = mappingSource.EffectiveCrop;
+                if (!OpticalFlowVideoMapping.SourceToOutput(ref u, ref v,
+                    crop.x, 1 - crop.z, crop.y, 1 - crop.w, mappingSource.mirror, mappingSource.flipY)) return false;
+            }
             if (u < 0 || u > 1 || v < 0 || v > 1) return false;
-            Rect rect = mappingPreview != null ? mappingPreview.VideoScreenRect(width, height) : OpticalFlowDebugView.FitScreen(width, height);
+            Rect rect;
+            if (mappingPreview != null) rect = mappingPreview.VideoScreenRect(width, height);
+            else if (mappingSource != null && mappingSource.framePlayArea)
+                rect = OpticalFlowDebugView.FitScreen(Mathf.RoundToInt(Mathf.Max(.1f, mappingSource.playAreaAspect) * 10000), 10000);
+            else rect = OpticalFlowDebugView.FitScreen(width, height);
             screen = new Vector2(rect.x + u * rect.width, rect.y + v * rect.height); // Bottom-left origin.
             return true;
         }
@@ -154,10 +196,13 @@ namespace Oxipital
 
         bool UpdateInteractionHands()
         {
+            LeftPositionValid = RightPositionValid = false;
             if (positionMapping == PositionMapping.SensorWorld)
             {
-                InteractionLeftHand = LeftHand;
-                InteractionRightHand = RightHand;
+                LeftPositionValid = LeftHandTracked;
+                RightPositionValid = RightHandTracked;
+                if (LeftPositionValid) InteractionLeftHand = LeftHand;
+                if (RightPositionValid) InteractionRightHand = RightHand;
             }
             else
             {
@@ -168,14 +213,19 @@ namespace Oxipital
                 if (depth <= camera.nearClipPlane) depth = Mathf.Max(interactionDepth, camera.nearClipPlane + .01f);
                 Plane plane = interactionPlane != null ? new Plane(interactionPlane.forward, interactionPlane.position)
                     : new Plane(camera.transform.forward, camera.transform.position + camera.transform.forward * depth);
-                if (!MapToInteractionPlane(LeftHand, camera, plane, out Vector3 left) ||
-                    !MapToInteractionPlane(RightHand, camera, plane, out Vector3 right)) return false;
-                InteractionLeftHand = left;
-                InteractionRightHand = right;
+                if (LeftHandTracked && MapToInteractionPlane(LeftHand, camera, plane, out Vector3 left))
+                { InteractionLeftHand = left; LeftPositionValid = true; }
+                if (RightHandTracked && MapToInteractionPlane(RightHand, camera, plane, out Vector3 right))
+                { InteractionRightHand = right; RightPositionValid = true; }
             }
-            InteractionHandDistance = Vector3.Distance(InteractionLeftHand, InteractionRightHand);
-            return true;
+            bool both = LeftPositionValid && RightPositionValid;
+            if (both) InteractionHandDistance = Vector3.Distance(InteractionLeftHand, InteractionRightHand);
+            return both;
         }
+
+        Vector3 InteractionCenter => LeftPositionValid && RightPositionValid
+            ? (InteractionLeftHand + InteractionRightHand) * .5f
+            : LeftPositionValid ? InteractionLeftHand : InteractionRightHand;
 
         void Update()
         {
@@ -189,29 +239,62 @@ namespace Oxipital
                 if (boundOrb != null)
                 {
                     originalOrbPosition = boundOrb.transform.position;
+                    originalOrbRotation = boundOrb.transform.rotation;
                     originalOrbRadius = boundOrb.dancerSize;
                 }
             }
             Vector3 left = default, right = default;
             uint body = 0;
-            bool tracked = input != null && input.TryGetHands(out left, out right, out body);
-            HandsTracked = tracked;
-            if (tracked)
-            {
-                LeftHand = sensorOrigin != null ? sensorOrigin.TransformPoint(left) : left;
-                RightHand = sensorOrigin != null ? sensorOrigin.TransformPoint(right) : right;
-                HandDistance = Vector3.Distance(LeftHand, RightHand);
-            }
-            PositionValid = tracked && UpdateInteractionHands();
+            bool leftTracked = false, rightTracked = false;
+            if (input != null) input.TryGetIndependentHands(out left, out right, out body, out leftTracked, out rightTracked);
+            LeftHandTracked = leftTracked;
+            RightHandTracked = rightTracked;
+            bool tracked = HandsTracked = leftTracked && rightTracked;
+            if (leftTracked) LeftHand = sensorOrigin != null ? sensorOrigin.TransformPoint(left) : left;
+            if (rightTracked) RightHand = sensorOrigin != null ? sensorOrigin.TransformPoint(right) : right;
+            if (tracked) HandDistance = Vector3.Distance(LeftHand, RightHand);
+            PositionValid = UpdateInteractionHands();
             float dt = Time.unscaledDeltaTime;
-            bool orbActive = controlOrbPosition && PositionValid && boundOrb != null;
-            if (orbActive)
+            bool orbActive = controlOrbPosition && AnyPositionValid && boundOrb != null;
+            if (controlOrbPosition && boundOrb != null)
             {
-                float blend = !previousOrbTracking || smoothingSeconds <= 0 ? 1 : 1 - Mathf.Exp(-dt / smoothingSeconds);
-                boundOrb.transform.position = Vector3.Lerp(boundOrb.transform.position, (InteractionLeftHand + InteractionRightHand) * .5f, blend);
-                orbWasMoved = true;
+                if (!orbPatternOwned)
+                {
+                    savedOrbCount = boundOrb.count;
+                    savedOrbSizeSpread = boundOrb.dancerSizeSpread;
+                    orbPatternOwned = true;
+                    boundOrb.positionPatternOverride = ApplyOrbHandPattern;
+                    orbLeftPosition = orbRightPosition = boundOrb.transform.position;
+                }
+                bool leftActive = twoHandOrbs ? LeftPositionValid : AnyPositionValid;
+                bool rightActive = twoHandOrbs ? RightPositionValid : AnyPositionValid;
+                // Each hand reacquires without interpolating from a stale pose.
+                float blend = smoothingSeconds <= 0 ? 1 : 1 - Mathf.Exp(-dt / smoothingSeconds);
+                bool newBody = body != previousOrbBody;
+                if (leftActive) orbLeftPosition = Vector3.Lerp(orbLeftPosition, twoHandOrbs ? InteractionLeftHand : InteractionCenter,
+                    !previousLeftOrbTracking || newBody ? 1 : blend);
+                if (rightActive) orbRightPosition = Vector3.Lerp(orbRightPosition, twoHandOrbs ? InteractionRightHand : InteractionCenter,
+                    !previousRightOrbTracking || newBody ? 1 : blend);
+                orbLeftGate = Mathf.MoveTowards(orbLeftGate, leftActive ? 1 : 0, dt / Mathf.Max(.01f, activationFadeSeconds));
+                orbRightGate = Mathf.MoveTowards(orbRightGate, rightActive ? 1 : 0, dt / Mathf.Max(.01f, activationFadeSeconds));
+                previousLeftOrbTracking = leftActive;
+                previousRightOrbTracking = rightActive;
+                previousOrbBody = body;
+                if (orbActive)
+                {
+                    // Keep the group anchor (and its feedback) on the same
+                    // smoothed positions written to the emitter dancers below.
+                    boundOrb.transform.position = !twoHandOrbs || !rightActive ? orbLeftPosition
+                        : !leftActive ? orbRightPosition : (orbLeftPosition + orbRightPosition) * .5f;
+                    orbWasMoved = true;
+                }
             }
-            previousOrbTracking = orbActive;
+            if (!controlOrbPosition) ReleaseOrbPattern();
+            if (orbPatternOwned)
+            {
+                boundOrb.count = twoHandOrbs ? 2 : 1;
+                boundOrb.dancerSizeSpread = 0;
+            }
             bool orbRadiusActive = controlOrbRadius && PositionValid && boundOrb != null;
             if (orbRadiusActive)
             {
@@ -220,6 +303,14 @@ namespace Oxipital
                 orbRadiusWasDriven = true;
             }
             previousOrbRadiusTracking = orbRadiusActive;
+            if (controlOrbOrientation && boundOrb != null && PositionValid && HandDistance >= minimumAxisDistance && InteractionHandDistance > .0001f)
+            {
+                Quaternion rotation = OffsetOrientation((InteractionRightHand - InteractionLeftHand).normalized);
+                float blend = !orbOrientationWasDriven || smoothingSeconds <= 0 ? 1 : 1 - Mathf.Exp(-dt / smoothingSeconds);
+                boundOrb.transform.rotation = Quaternion.Slerp(boundOrb.transform.rotation, rotation, blend);
+                orbOrientationWasDriven = true;
+            }
+            if (!controlForcePosition) ReleaseForcePattern();
             if (bound == null || input == null)
             {
                 Status = input == null ? "Assign Azure Kinect input" : forceManager != null
@@ -228,6 +319,11 @@ namespace Oxipital
                 Mute(); return;
             }
             int selection = Mathf.Clamp(selectedBrush, 0, brushes.Length);
+            // Chataigne can load or interpolate the current group's intensity
+            // while this controller is already bound. Keep that authored value
+            // separate from our activation/gesture multiplier.
+            if (selection == 0 && !Mathf.Approximately(bound.dancerIntensity, lastWrittenIntensity))
+                presetIntensity = bound.dancerIntensity;
             ForceBrushPreset preset = selection > 0 ? brushes[selection - 1] : null;
             if (selection > 0 && preset == null) { Mute(); Status = "Assign the selected brush preset"; return; }
             if (selection != appliedSelection || preset != appliedPreset)
@@ -245,43 +341,70 @@ namespace Oxipital
             bound.dancerLookAtMode = 0;
             bound.dancerRotation = Vector3.zero;
 
-            bool active = brushEnabled && tracked && PositionValid;
+            bool active = brushEnabled && AnyPositionValid;
             float intensityTarget = intensityMapping == IntensityMapping.Manual ? 1 : tracked
                 ? Mathf.InverseLerp(intensityDistanceRange.x, intensityDistanceRange.y, HandDistance) : 0;
             if (intensityMapping != IntensityMapping.Manual && invertGestureIntensity && tracked) intensityTarget = 1 - intensityTarget;
-            if (controlBrushParameters)
+            if (controlBrushParameters && (intensityMapping == IntensityMapping.Manual || PositionValid))
                 GestureIntensity = Mathf.Lerp(GestureIntensity, intensityTarget, smoothingSeconds <= 0 ? 1 : 1 - Mathf.Exp(-dt / smoothingSeconds));
             gate = Mathf.MoveTowards(gate, active ? 1 : 0, dt / Mathf.Max(.01f, activationFadeSeconds));
             bound.dancerIntensity = presetIntensity * Mathf.Clamp01(strength) * GestureIntensity * gate;
+            lastWrittenIntensity = bound.dancerIntensity;
             if (active)
             {
-                Vector3 midpoint = (InteractionLeftHand + InteractionRightHand) * .5f;
+                Vector3 midpoint = InteractionCenter;
                 bool reset = !previousTracking || body != previousBody;
                 float blend = reset || smoothingSeconds <= 0 ? 1 : 1 - Mathf.Exp(-dt / smoothingSeconds);
-                if (controlForcePosition) bound.transform.position = Vector3.Lerp(bound.transform.position, midpoint, blend);
+                if (controlForcePosition)
+                {
+                    forcePosition = Vector3.Lerp(forcePosition, midpoint, blend);
+                    bound.transform.position = forcePosition;
+                    if (!forcePatternOwned)
+                    {
+                        savedForcePattern = bound.positionPatternOverride;
+                        bound.positionPatternOverride = ApplyForceHandPattern;
+                        forcePatternOwned = true;
+                    }
+                }
                 float radius = RequestedRadius;
-                if (controlBrushParameters) bound.dancerSize = Mathf.Lerp(reset ? radius : bound.dancerSize, radius, blend);
+                if (controlBrushParameters && PositionValid)
+                {
+                    bound.dancerSize = Mathf.Lerp(reset ? radius : bound.dancerSize, radius, blend);
+                    forceSizeDriven = true;
+                }
                 BrushRadius = bound.dancerSize;
-                if (HandDistance >= minimumAxisDistance && InteractionHandDistance > .0001f) rawDirection = (InteractionRightHand - InteractionLeftHand).normalized;
+                if (PositionValid && HandDistance >= minimumAxisDistance && InteractionHandDistance > .0001f) rawDirection = (InteractionRightHand - InteractionLeftHand).normalized;
                 Quaternion orientation = OffsetOrientation(rawDirection);
                 direction = orientation * Vector3.forward;
-                if (controlForceOrientation && orientAlongHands)
+                if (PositionValid && controlForceOrientation && orientAlongHands)
                 {
                     bound.transform.rotation = Quaternion.Slerp(bound.transform.rotation, orientation, blend);
                 }
-                if (controlForceOrientation && driveLinearDirection) bound.linearDirection = direction;
+                if (PositionValid && controlForceOrientation && driveLinearDirection)
+                {
+                    bound.linearDirection = direction;
+                    forceDirectionDriven = true;
+                }
                 previousBody = body;
-                Status = "Brush active";
+                Status = PositionValid ? "Brush active (two hands)" : "Brush active (one hand; distance and orientation held)";
             }
-            else Status = !brushEnabled ? "Brush inactive" : tracked && !PositionValid
+            else Status = !brushEnabled ? "Brush inactive" : AnyHandTracked && !AnyPositionValid
                 ? "Cannot map hands to particle scene: check Visualization Camera, interaction plane/depth and video crop"
-                : input.BodyStatus + " (waiting for two reliable hands)";
+                : input.BodyStatus + " (waiting for a reliable hand)";
             previousTracking = active;
         }
 
         StandardForceGroup ResolveTarget()
         {
             if (target != null) return target;
+            // Managers and their groups are created during Play. Resolve the
+            // force manager in our own Ballet, just as for the orb manager,
+            // and retry while the scene is still being initialized.
+            if (forceManager == null)
+            {
+                var ballet = GetComponentInParent<Ballet>();
+                if (ballet != null) forceManager = ballet.GetComponentInChildren<StandardForceManager>();
+            }
             if (forceManager == null || forceGroupNumber < 1 || forceManager.items == null) return null;
             int index = forceGroupNumber - 1;
             return index < forceManager.items.Count ? forceManager.items[index] : null;
@@ -290,6 +413,11 @@ namespace Oxipital
         OrbGroup ResolveOrbTarget()
         {
             if (orbTarget != null) return orbTarget;
+            if (orbManager == null && (controlOrbPosition || controlOrbRadius || controlOrbOrientation))
+            {
+                var ballet = GetComponentInParent<Ballet>();
+                if (ballet != null) orbManager = ballet.GetComponentInChildren<OrbManager>();
+            }
             if (orbManager == null || orbGroupNumber < 1 || orbManager.items == null) return null;
             int index = orbGroupNumber - 1;
             return index < orbManager.items.Count ? orbManager.items[index] : null;
@@ -335,9 +463,11 @@ namespace Oxipital
             original.hideFlags = HideFlags.HideAndDontSave;
             original.Capture(bound);
             originalPosition = bound.transform.position;
+            forcePosition = originalPosition;
             originalRotation = bound.transform.rotation;
             originalScale = bound.transform.localScale;
             presetIntensity = bound.dancerIntensity;
+            lastWrittenIntensity = bound.dancerIntensity;
             appliedSelection = -1;
             gate = 0;
         }
@@ -346,14 +476,24 @@ namespace Oxipital
         {
             previousTracking = false;
             gate = 0;
-            if (bound != null) bound.dancerIntensity = 0;
+            if (bound != null) bound.dancerIntensity = lastWrittenIntensity = 0;
         }
 
         void ReleaseTarget()
         {
+            ReleaseForcePattern();
             if (bound != null && original != null)
             {
-                original.Apply(bound);
+                if (appliedPreset != null) original.Apply(bound);
+                else
+                {
+                    // Release only what the gesture controller owned. Preserve
+                    // force settings loaded by Chataigne since we bound the group.
+                    original.RestoreFields(bound, "count", "patternSize", "patternSpeed", "dancerLookAtMode", "dancerRotation");
+                    if (forceSizeDriven) original.RestoreFields(bound, "dancerSize");
+                    if (forceDirectionDriven) original.RestoreFields(bound, "linearDirection");
+                    bound.dancerIntensity = presetIntensity;
+                }
                 bound.transform.position = originalPosition;
                 bound.transform.rotation = originalRotation;
                 bound.transform.localScale = originalScale;
@@ -362,19 +502,70 @@ namespace Oxipital
             original = null;
             bound = null;
             appliedPreset = null;
+            forceSizeDriven = forceDirectionDriven = false;
             previousTracking = HandsTracked = false;
         }
 
         void ReleaseOrb()
         {
+            ReleaseOrbPattern();
             if (boundOrb != null && orbWasMoved) boundOrb.transform.position = originalOrbPosition;
             if (boundOrb != null && orbRadiusWasDriven) boundOrb.dancerSize = originalOrbRadius;
+            if (boundOrb != null && orbOrientationWasDriven) boundOrb.transform.rotation = originalOrbRotation;
             boundOrb = null;
-            orbWasMoved = previousOrbTracking = false;
+            orbWasMoved = false;
             orbRadiusWasDriven = previousOrbRadiusTracking = false;
+            orbOrientationWasDriven = false;
         }
 
-        void OnDisable() { ReleaseTarget(); ReleaseOrb(); }
+        void ApplyForceHandPattern()
+        {
+            savedForcePattern?.Invoke();
+            if (bound == null || !controlForcePosition || !brushEnabled || !AnyPositionValid || bound.items == null) return;
+            // Write the same world center after saved patterns and immediately
+            // before the force buffer is packed. Feedback and VFX read it alike.
+            bound.transform.position = forcePosition;
+            foreach (var dancer in bound.items)
+                if (dancer != null) dancer.transform.position = forcePosition;
+        }
+
+        void ReleaseForcePattern()
+        {
+            if (forcePatternOwned && bound != null && bound.positionPatternOverride == ApplyForceHandPattern)
+                bound.positionPatternOverride = savedForcePattern;
+            savedForcePattern = null;
+            forcePatternOwned = false;
+        }
+
+        void ApplyOrbHandPattern()
+        {
+            if (boundOrb == null || boundOrb.items == null) return;
+            for (int i = 0; i < boundOrb.items.Count; i++)
+                if (boundOrb.items[i] != null)
+                {
+                    boundOrb.items[i].transform.position = i == 0 ? orbLeftPosition : orbRightPosition;
+                    boundOrb.items[i].intensity *= i == 0 ? orbLeftGate : orbRightGate;
+                }
+        }
+
+        void ReleaseOrbPattern()
+        {
+            if (orbPatternOwned && boundOrb != null)
+            {
+                boundOrb.positionPatternOverride = null;
+                boundOrb.count = savedOrbCount;
+                boundOrb.dancerSizeSpread = savedOrbSizeSpread;
+            }
+            orbPatternOwned = false;
+            orbLeftGate = orbRightGate = 0;
+            previousLeftOrbTracking = previousRightOrbTracking = false;
+        }
+
+        void OnDisable()
+        {
+            ReleaseTarget(); ReleaseOrb();
+            LeftHandTracked = RightHandTracked = LeftPositionValid = RightPositionValid = PositionValid = false;
+        }
         void OnEnable()
         {
             if (Application.isPlaying && GetComponent<TwoHandBrushMonitor>() == null)

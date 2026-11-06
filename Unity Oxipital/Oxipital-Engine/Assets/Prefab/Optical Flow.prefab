@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 6, y: 6, z: 1}
+  m_LocalScale: {x: 8.000001, y: 6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5540847596130008035}
@@ -138,6 +138,11 @@ MonoBehaviour:
   cropRight: 0
   cropBottom: 0
   cropTop: 0
+  framePlayArea: 1
+  playAreaAspect: 1.3333334
+  playAreaZoom: 1.23
+  playAreaCenterX: 0.5
+  playAreaCenterY: 0.5
   changeDetection: 0
   changeThreshold: 0.0001
   fixedRate: 30
@@ -200,12 +205,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowManager
   forceEnabled: 1
   intensity: 1
-  strength: 38.6
-  depthBand: 5
+  strength: 30
+  depthBand: 10
   windBlend: 0.437
   windSpeed: 5.63
   windDrag: 6.89
   planeScale: 6
+  fitPlaneToPlayArea: 1
   plane: {fileID: 8126784136976625692}
 --- !u!114 &589528886552496778
 MonoBehaviour:
@@ -223,11 +229,11 @@ MonoBehaviour:
   motionGain: 10
   gestureThreshold: 0.5
   gestureCooldown: 0.5
-  motionAmount: 0.00008540711
-  averageDirection: {x: 0.00007565671, y: 0.0000068504783}
-  averageDirectionWorld: {x: 0.00007565671, y: 0.0000068504783, z: 0}
+  motionAmount: 0.00000000957057
+  averageDirection: {x: -3.8954576e-10, y: -4.5618686e-11}
+  averageDirectionWorld: {x: -3.8954576e-10, y: -4.5618686e-11, z: -0}
   gesture: 0
-  gestureCount: 214
+  gestureCount: 51
 --- !u!114 &7166887364604190137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -241,10 +247,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Oxipital.OpticalFlowDebugView
   view: 1
-  gain: 10
+  gain: 1
   displayWidth: 320
   fullscreen: 1
-  overlayOpacity: 0
+  overlayOpacity: 1
   transparentBackground: 1
   planeView: 1
   followInputOrientation: 1
@@ -335,6 +341,10 @@ MonoBehaviour:
   bodyModelPath: 
   minimumHandConfidence: 2
   trackingTimeout: 0.3
+  filterHandDepth: 0
+  minimumHandDepth: 0.5
+  maximumHandDepth: 4
+  depthCalibrationMargin: 0.75
 --- !u!114 &5237569766978141556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -351,11 +361,14 @@ MonoBehaviour:
   target: {fileID: 0}
   forceManager: {fileID: 0}
   forceGroupNumber: 1
-  controlForcePosition: 0
+  controlForcePosition: 1
   controlBrushParameters: 0
   controlForceOrientation: 0
   controlOrbPosition: 1
-  orientationOffset: {x: 90, y: 90, z: 0}
+  controlOrbRadius: 0
+  twoHandOrbs: 1
+  orbRadiusMultiplier: 1
+  orientationOffset: {x: 0, y: 0, z: 90}
   orbTarget: {fileID: 0}
   orbManager: {fileID: 0}
   orbGroupNumber: 1
@@ -365,26 +378,23 @@ MonoBehaviour:
   interactionPlane: {fileID: 0}
   useTargetDepth: 1
   interactionDepth: 10
-  brushes:
-  - {fileID: 11400000, guid: b5725071c58985f4cb8ae27d587845f8, type: 2}
-  - {fileID: 11400000, guid: 773348c02f22e6c4c99bbe505c90a53a, type: 2}
-  - {fileID: 11400000, guid: cf44132384ea3c348ac095df0d6ec76b, type: 2}
+  brushes: []
   selectedBrush: 0
   brushEnabled: 1
   strength: 1
   intensityMapping: 0
   intensityDistanceRange: {x: 0.1, y: 1}
   invertGestureIntensity: 0
-  radiusMultiplier: 2
+  radiusMultiplier: 0.5
   sizeMultiplier: 1
   minimumRadius: 0.05
-  maximumRadius: 10
+  maximumRadius: 3
   minimumAxisDistance: 0.08
   smoothingSeconds: 0.08
   activationFadeSeconds: 0.12
   orientAlongHands: 1
   driveLinearDirection: 1
-  showMonitor: 1
+  showMonitor: 0
   monitorScale: 1.5
   showHandOverlay: 1
   overlayProjection: 0
@@ -416,7 +426,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7037112836647289198
 RectTransform:
   m_ObjectHideFlags: 0
@@ -494,8 +504,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 840, y: 0}
-  m_SizeDelta: {x: 2160, y: 2160}
+  m_AnchoredPosition: {x: 240.018, y: 0}
+  m_SizeDelta: {x: 1439.964, y: 1080}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &282247950748956583
 CanvasRenderer:
@@ -518,7 +528,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RawImage
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.013}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

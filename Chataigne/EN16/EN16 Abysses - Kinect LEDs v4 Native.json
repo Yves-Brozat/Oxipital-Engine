@@ -1,0 +1,373 @@
+{
+    "id":  "d8b0d95d-3747-4ce8-af51-7cd8b7a8a0e0",
+    "modifiedAt":  "2026-11-04T16:32:45.225Z",
+    "name":  "EN16 Abysses - Kinect LEDs v4 Native",
+    "type":  "EN16",
+    "version":  {
+                    "major":  "1",
+                    "minor":  "6",
+                    "patch":  "2"
+                },
+    "configType":  "profile",
+    "configs":  [
+                    {
+                        "controlElementNumber":  0,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(0)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(0)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  1,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(1)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(1)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  2,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(2)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(2)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  3,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(3)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(3)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  4,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(4)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(4)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  5,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(5)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(5)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  6,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(6)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(6)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  7,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(7)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(7)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  8,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(8)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(8)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  9,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(9)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(9)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  10,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(10)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(10)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  11,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(11)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(11)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  12,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(12)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(12)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  13,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(13)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(13)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  14,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(14)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(14)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  15,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[Encoder Init]]"
+                                       },
+                                       {
+                                           "event":  3,
+                                           "config":  "--[[@sbc]] self:bmo(0) self:bmi(0) self:bma(127)--[[@cb]] oxipital_led(15)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  2,
+                                           "config":  "--[[@sec]] self:emo(1) self:ev0(50) self:emi(0) self:ema(127) self:ese(100)--[[@cb]] oxipital_led(15)--[[@gms]] self:gms(-1,-1,-1,-1)"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    },
+                    {
+                        "controlElementNumber":  255,
+                        "events":  [
+                                       {
+                                           "event":  0,
+                                           "config":  "--[[@cb]] --[[page init]] --[[@cb]] oxipital_kinect_bank=false function oxipital_led(i) for l=1,2 do glf(i,l,0) gls(i,l,0) end if oxipital_kinect_bank then glc(i,1,0,0,0) glc(i,2,255,210,0) glp(i,2,255) else for l=1,2 do glc(i,l,glr(),glg(),glb()) end glp(i,1,(ele[i]:bva()*255/127)//1) glp(i,2,(ele[i]:eva()*255/127)//1) end end self.midirx_cb=function(self,e,h) if e[1]==15 and e[2]==176 and e[3]==119 then local b=e[4]\u003e=64 local changed=b~=oxipital_kinect_bank oxipital_kinect_bank=b for i=0,15 do oxipital_led(i) end if changed then print(\"Oxipital LEDs v4: \"..e[4]) end end end print(\"Oxipital LEDs: init v4 Native\")"
+                                       },
+                                       {
+                                           "event":  4,
+                                           "config":  "--[[@cb]] gpl(gpn())"
+                                       },
+                                       {
+                                           "event":  5,
+                                           "config":  "--[[@l]] local ch,cmd,param1,param2=midi.ch,midi.cmd,midi.p1,midi.p2"
+                                       },
+                                       {
+                                           "event":  6,
+                                           "config":  "--[[@cb]] print(\u0027tick\u0027)"
+                                       }
+                                   ]
+                    }
+                ],
+    "createdAt":  "2026-11-04T16:32:45.225Z",
+    "description":  "Original encoder/button MIDI settings. Channel 16 CC119: 127 = yellow Kinect bank; 0 = original automatic colors."
+}

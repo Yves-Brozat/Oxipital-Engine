@@ -6,6 +6,7 @@ namespace Oxipital.Editor
     [CustomEditor(typeof(OpticalFlowKinectInput), true)]
     public sealed class OpticalFlowKinectInputEditor : UnityEditor.Editor
     {
+        string depthCalibrationStatus;
         public override bool RequiresConstantRepaint() => Application.isPlaying;
 
         public override void OnInspectorGUI()
@@ -21,6 +22,18 @@ namespace Oxipital.Editor
                 EditorGUILayout.HelpBox("Azure IR: " + azureInput.DepthModeDescription + ". Active illumination; color disabled. Changing Depth Mode restarts capture and body tracking. Adjust Infrared Gain to the preview.", MessageType.Info);
                 EditorGUILayout.HelpBox(azureInput.BodyStatus, MessageType.Info);
                 EditorGUILayout.LabelField("Body tracking FPS", azureInput.BodyFPS.ToString("F1"));
+                EditorGUILayout.LabelField(azureInput.HandDiagnostics(true));
+                EditorGUILayout.LabelField(azureInput.HandDiagnostics(false));
+                EditorGUILayout.HelpBox("Hand depth is measured in sensor metres. Interaction Depth on the brush places effects in the Unity scene; it does not change sensor range. Calibration creates an optional activation zone and requires at least one fresh, reliable hand.", MessageType.Info);
+                using (new EditorGUI.DisabledScope(!Application.isPlaying))
+                    if (GUILayout.Button("Calibrate Hand Depth at Current Pose"))
+                    {
+                        Undo.RecordObject(azureInput, "Calibrate hand depth");
+                        bool success = azureInput.CalibrateHandDepth();
+                        depthCalibrationStatus = success ? "Hand depth zone calibrated." : "No fresh, reliable hand available for calibration.";
+                        if (success) EditorUtility.SetDirty(azureInput);
+                    }
+                if (!string.IsNullOrEmpty(depthCalibrationStatus)) EditorGUILayout.HelpBox(depthCalibrationStatus, MessageType.Info);
                 if (azureInput.GetComponent<TwoHandForceBrush>() == null && GUILayout.Button("Add Two-Hand Force Brush"))
                 {
                     var brush = Undo.AddComponent<TwoHandForceBrush>(azureInput.gameObject);

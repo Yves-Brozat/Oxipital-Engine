@@ -93,7 +93,7 @@ MonoBehaviour:
   life: 6
   infiniteLife: 0
   infiniteCount: 0
-  emitterShape: 1
+  emitterShape: 0
   emitterSurfaceFactor: 1
   emitterVolumeFactor: 0
   emitterPositionNoise: 0
@@ -191,7 +191,7 @@ MonoBehaviour:
   noisyDrag: 0
   noisyDragFrequency: 0
   activateCollision: 0
-  emitterScale: {x: 16, y: 9, z: 1}
+  emitterScale: {x: 1, y: 1, z: 1}
   maxInfiniteParticles: 2000000
   infiniteRankBase: 0
   opticalFlowWeight: 1

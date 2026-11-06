@@ -23,6 +23,24 @@ namespace Oxipital
         public string Status;
     }
 
+    internal enum AzureHandRejection { None, NoBody, StaleFrame, InvalidPosition, LowConfidence, OutsideDepthRange }
+
+    internal static class AzureHandTracking
+    {
+        public static AzureHandRejection Evaluate(AzureHandFrame frame, AzureBodyJoint hand, bool fresh,
+            int confidence, bool filterDepth, float near, float far)
+        {
+            if (!frame.HasBody) return AzureHandRejection.NoBody;
+            if (!fresh) return AzureHandRejection.StaleFrame;
+            if (float.IsNaN(hand.X) || float.IsInfinity(hand.X) || float.IsNaN(hand.Y) || float.IsInfinity(hand.Y) ||
+                float.IsNaN(hand.Z) || float.IsInfinity(hand.Z) || hand.Z <= 0) return AzureHandRejection.InvalidPosition;
+            if (hand.Confidence < confidence) return AzureHandRejection.LowConfidence;
+            float z = hand.Z * .001f;
+            if (filterDepth && (z < near || z > far)) return AzureHandRejection.OutsideDepthRange;
+            return AzureHandRejection.None;
+        }
+    }
+
     internal sealed class AzureBodyTrackingState
     {
         [StructLayout(LayoutKind.Sequential)] struct Point3 { public float X, Y, Z; }

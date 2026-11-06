@@ -423,6 +423,22 @@ MonoBehaviour:
     max: Infinity
     enumValues: []
     descendantCount: 0
+  - name: Particle Mesh
+    path: Particle Mesh
+    tooltip: 
+    space: -1
+    spaceable: 0
+    sheetType: m_NamedObject
+    realType: Mesh
+    defaultValue:
+      m_Type:
+        m_SerializableType: UnityEngine.Mesh, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+      m_SerializableObject: '{"obj":{"fileID":10207,"guid":"0000000000000000e000000000000000","type":0}}'
+    min: -Infinity
+    max: Infinity
+    enumValues: []
+    descendantCount: 0
   - name: Orb Buffer
     path: 
     tooltip: 
@@ -450,22 +466,6 @@ MonoBehaviour:
         m_SerializableType: UnityEngine.Mesh, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
       m_SerializableObject: 
-    min: -Infinity
-    max: Infinity
-    enumValues: []
-    descendantCount: 0
-  - name: Particle Mesh
-    path: Particle Mesh
-    tooltip:
-    space: -1
-    spaceable: 0
-    sheetType: m_NamedObject
-    realType: Mesh
-    defaultValue:
-      m_Type:
-        m_SerializableType: UnityEngine.Mesh, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-      m_SerializableObject:
     min: -Infinity
     max: Infinity
     enumValues: []
@@ -1438,7 +1438,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614596}
   m_ExposedName: Force Group 1
   m_Exposed: 1
-  m_Order: 0
+  m_Order: 1
   m_Category: Forces
   m_Min:
     m_Type:
@@ -1611,7 +1611,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614716}
   m_ExposedName: Force Group 3B
   m_Exposed: 1
-  m_Order: 1
+  m_Order: 2
   m_Category: Forces
   m_Min:
     m_Type:
@@ -1692,7 +1692,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614718}
   m_ExposedName: Force Group 4
   m_Exposed: 1
-  m_Order: 2
+  m_Order: 3
   m_Category: Forces
   m_Min:
     m_Type:
@@ -1773,7 +1773,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614720}
   m_ExposedName: Force Group 4B
   m_Exposed: 1
-  m_Order: 3
+  m_Order: 4
   m_Category: Forces
   m_Min:
     m_Type:
@@ -1854,7 +1854,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614722}
   m_ExposedName: Orb Buffer
   m_Exposed: 1
-  m_Order: 4
+  m_Order: 5
   m_Category: Orb
   m_Min:
     m_Type:
@@ -2108,7 +2108,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614737}
   m_ExposedName: Emitter Mesh
   m_Exposed: 1
-  m_Order: 5
+  m_Order: 6
   m_Category: Orb
   m_Min:
     m_Type:
@@ -2216,7 +2216,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614803}
   m_ExposedName: Emitter Intensity
   m_Exposed: 1
-  m_Order: 6
+  m_Order: 7
   m_Category: Orb
   m_Min:
     m_Type:
@@ -2433,7 +2433,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614983}
   m_ExposedName: Camera Position
   m_Exposed: 1
-  m_Order: 7
+  m_Order: 8
   m_Category: 
   m_Min:
     m_Type:
@@ -5066,7 +5066,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615594}
   m_ExposedName: Force Group 1B
   m_Exposed: 1
-  m_Order: 8
+  m_Order: 9
   m_Category: Forces
   m_Min:
     m_Type:
@@ -5147,7 +5147,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615598}
   m_ExposedName: Force Group 2
   m_Exposed: 1
-  m_Order: 9
+  m_Order: 10
   m_Category: Forces
   m_Min:
     m_Type:
@@ -5228,7 +5228,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615600}
   m_ExposedName: Force Group 2B
   m_Exposed: 1
-  m_Order: 10
+  m_Order: 11
   m_Category: Forces
   m_Min:
     m_Type:
@@ -5309,7 +5309,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615602}
   m_ExposedName: Force Group 3
   m_Exposed: 1
-  m_Order: 11
+  m_Order: 12
   m_Category: Forces
   m_Min:
     m_Type:
@@ -5530,7 +5530,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615851}
   m_ExposedName: Augmenta Positions
   m_Exposed: 1
-  m_Order: 12
+  m_Order: 13
   m_Category: Orb
   m_Min:
     m_Type:
@@ -5635,7 +5635,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615853}
   m_ExposedName: Augmenta Position Count
   m_Exposed: 1
-  m_Order: 13
+  m_Order: 14
   m_Category: Orb
   m_Min:
     m_Type:
@@ -6061,7 +6061,7 @@ MonoBehaviour:
   - {fileID: 8926484042661615870}
   m_ExposedName: Emitter Mesh Color
   m_Exposed: 1
-  m_Order: 14
+  m_Order: 15
   m_Category: Orb
   m_Min:
     m_Type:
@@ -8092,7 +8092,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616135}
   m_ExposedName: Color Over Life
   m_Exposed: 1
-  m_Order: 15
+  m_Order: 16
   m_Category: Orb
   m_Min:
     m_Type:
@@ -8191,7 +8191,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616137}
   m_ExposedName: Color Over Speed
   m_Exposed: 1
-  m_Order: 16
+  m_Order: 17
   m_Category: Orb
   m_Min:
     m_Type:
@@ -8430,7 +8430,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616147}
   m_ExposedName: Emitter Color
   m_Exposed: 1
-  m_Order: 17
+  m_Order: 18
   m_Category: Orb
   m_Min:
     m_Type:
@@ -10598,7 +10598,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616275}
   m_ExposedName: Source Position
   m_Exposed: 1
-  m_Order: 18
+  m_Order: 19
   m_Category: Orb
   m_Min:
     m_Type:
@@ -10808,7 +10808,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616280}
   m_ExposedName: Collision SDF
   m_Exposed: 1
-  m_Order: 19
+  m_Order: 20
   m_Category: Orb
   m_Min:
     m_Type:
@@ -15873,7 +15873,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616525}
   m_ExposedName: Optical Flow Map
   m_Exposed: 1
-  m_Order: 20
+  m_Order: 21
   m_Category: 
   m_Min:
     m_Type:
@@ -15954,7 +15954,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616527}
   m_ExposedName: Optical Flow World To Plane
   m_Exposed: 1
-  m_Order: 21
+  m_Order: 22
   m_Category: 
   m_Min:
     m_Type:
@@ -16035,7 +16035,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616529}
   m_ExposedName: Optical Flow Plane Right
   m_Exposed: 1
-  m_Order: 22
+  m_Order: 23
   m_Category: 
   m_Min:
     m_Type:
@@ -16218,7 +16218,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616534}
   m_ExposedName: Optical Flow Plane Up
   m_Exposed: 1
-  m_Order: 23
+  m_Order: 24
   m_Category: 
   m_Min:
     m_Type:
@@ -16401,7 +16401,7 @@ MonoBehaviour:
   - {fileID: 8926484042661616539}
   m_ExposedName: Optical Flow Params
   m_Exposed: 1
-  m_Order: 24
+  m_Order: 25
   m_Category: 
   m_Min:
     m_Type:
@@ -16928,8 +16928,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1622f1b21236b9418846ede6cf6bd40, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 114350483966674976}
   m_Children:
@@ -16987,17 +16987,29 @@ MonoBehaviour:
     m_PropertyNames: []
     m_PropertyValues: []
     renderQueue: -1
+  useMaskMap: 0
+  useNormalMap: 0
+  useEmissiveMap: 0
   colorMode: 1
   useEmissive: 0
   materialType: 0
   onlyAmbientLighting: 0
-  receiveShadows: 1
+  diffusionProfileAsset: {fileID: 0}
+  multiplyThicknessWithAlpha: 0
+  doubleSided: 0
+  preserveSpecularLighting: 0
   enableSpecular: 1
+  lightmapRemapMode: 0
+  lightmapRemapRanges: 0
+  useAlphaRemap: 0
+  emissiveMode: 0
+  useEmissiveChannelScale: 0
+  useColorAbsorption: 1
+  receiveShadows: 1
   enableCookie: 1
   enableEnvLight: 1
-  doubleSided: 0
   primitiveType: 1
-  useGeometryShader: 0
+  normalBending: 0
 --- !u!114 &8926484042661620002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17008,8 +17020,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45fdf0bbbd1d59d4e883e734442050d7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620001}
   m_Children: []
@@ -17037,8 +17049,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5ff4abdfc4ddb54992e15a0636f5d0e, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -17052,7 +17064,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.GraphicsBuffer, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject:
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: Buffer
@@ -17072,8 +17084,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5265657162cc1a241bba03a3b0476d99, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children:
@@ -17108,8 +17120,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac39bd03fca81b849929b9c966f1836a, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620004}
   m_Children:
@@ -17124,8 +17136,8 @@ MonoBehaviour:
     m_Owner: {fileID: 0}
     m_Value:
       m_Type:
-        m_SerializableType:
-      m_SerializableObject:
+        m_SerializableType: 
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: position
@@ -17144,8 +17156,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620005}
   m_Children: []
@@ -17157,8 +17169,8 @@ MonoBehaviour:
     m_Owner: {fileID: 0}
     m_Value:
       m_Type:
-        m_SerializableType:
-      m_SerializableObject:
+        m_SerializableType: 
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: x
@@ -17177,8 +17189,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620005}
   m_Children: []
@@ -17190,8 +17202,8 @@ MonoBehaviour:
     m_Owner: {fileID: 0}
     m_Value:
       m_Type:
-        m_SerializableType:
-      m_SerializableObject:
+        m_SerializableType: 
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: y
@@ -17210,8 +17222,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620005}
   m_Children: []
@@ -17223,8 +17235,8 @@ MonoBehaviour:
     m_Owner: {fileID: 0}
     m_Value:
       m_Type:
-        m_SerializableType:
-      m_SerializableObject:
+        m_SerializableType: 
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: z
@@ -17243,8 +17255,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d246e354feb93041a837a9ef59437cb, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -17277,8 +17289,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76f778ff57c4e8145b9681fe3268d8e9, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -17312,8 +17324,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76f778ff57c4e8145b9681fe3268d8e9, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -17347,7 +17359,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5ff4abdfc4ddb54992e15a0636f5d0e, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.VisualEffectGraph.Editor::UnityEditor.VFX.VFXSlotGraphicsBuffer
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
@@ -17362,7 +17374,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.GraphicsBuffer, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject:
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: Buffer 1
@@ -17381,8 +17393,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4c11ff25089a324daf359f4b0629b33, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -17415,8 +17427,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -17449,8 +17461,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 70a331b1d86cc8d4aa106ccbe0da5852, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -17483,8 +17495,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 081ffb0090424ba4cb05370a42ead6b9, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -17503,8 +17515,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -17537,8 +17549,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -17571,8 +17583,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c6841bdef989b6d408d7298703cfde75, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 114350483966674976}
   m_Children:
@@ -17632,15 +17644,27 @@ MonoBehaviour:
     m_PropertyNames: []
     m_PropertyValues: []
     renderQueue: -1
+  useMaskMap: 0
+  useNormalMap: 0
+  useEmissiveMap: 0
   colorMode: 1
   useEmissive: 0
   materialType: 0
   onlyAmbientLighting: 0
-  receiveShadows: 1
+  diffusionProfileAsset: {fileID: 0}
+  multiplyThicknessWithAlpha: 0
+  doubleSided: 0
+  preserveSpecularLighting: 0
   enableSpecular: 1
+  lightmapRemapMode: 0
+  lightmapRemapRanges: 0
+  useAlphaRemap: 0
+  emissiveMode: 0
+  useEmissiveChannelScale: 0
+  useColorAbsorption: 1
+  receiveShadows: 1
   enableCookie: 1
   enableEnvLight: 1
-  doubleSided: 0
   MeshCount: 1
   lod: 0
 --- !u!114 &8926484042661620020
@@ -17653,8 +17677,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45fdf0bbbd1d59d4e883e734442050d7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620019}
   m_Children: []
@@ -17682,8 +17706,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5ff4abdfc4ddb54992e15a0636f5d0e, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -17697,7 +17721,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.GraphicsBuffer, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject:
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: Buffer
@@ -17717,8 +17741,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5265657162cc1a241bba03a3b0476d99, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children:
@@ -17753,8 +17777,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac39bd03fca81b849929b9c966f1836a, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620022}
   m_Children:
@@ -17769,8 +17793,8 @@ MonoBehaviour:
     m_Owner: {fileID: 0}
     m_Value:
       m_Type:
-        m_SerializableType:
-      m_SerializableObject:
+        m_SerializableType: 
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: position
@@ -17789,8 +17813,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620023}
   m_Children: []
@@ -17802,8 +17826,8 @@ MonoBehaviour:
     m_Owner: {fileID: 0}
     m_Value:
       m_Type:
-        m_SerializableType:
-      m_SerializableObject:
+        m_SerializableType: 
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: x
@@ -17822,8 +17846,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620023}
   m_Children: []
@@ -17835,8 +17859,8 @@ MonoBehaviour:
     m_Owner: {fileID: 0}
     m_Value:
       m_Type:
-        m_SerializableType:
-      m_SerializableObject:
+        m_SerializableType: 
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: y
@@ -17855,8 +17879,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620023}
   m_Children: []
@@ -17868,8 +17892,8 @@ MonoBehaviour:
     m_Owner: {fileID: 0}
     m_Value:
       m_Type:
-        m_SerializableType:
-      m_SerializableObject:
+        m_SerializableType: 
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: z
@@ -17888,8 +17912,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d246e354feb93041a837a9ef59437cb, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -17922,8 +17946,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76f778ff57c4e8145b9681fe3268d8e9, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -17957,8 +17981,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76f778ff57c4e8145b9681fe3268d8e9, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -17992,7 +18016,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5ff4abdfc4ddb54992e15a0636f5d0e, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.VisualEffectGraph.Editor::UnityEditor.VFX.VFXSlotGraphicsBuffer
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
@@ -18007,7 +18031,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.GraphicsBuffer, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject:
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: Buffer 1
@@ -18026,8 +18050,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4c11ff25089a324daf359f4b0629b33, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18060,8 +18084,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18094,8 +18118,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 081ffb0090424ba4cb05370a42ead6b9, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18114,8 +18138,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18148,8 +18172,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18182,8 +18206,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b47b8679b468b7347a00cdd50589bc9f, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18195,15 +18219,15 @@ MonoBehaviour:
     m_Owner: {fileID: 8926484042661620019}
     m_Value:
       m_Type:
-        m_SerializableType: UnityEngine.Mesh, UnityEngine.CoreModule, Version=4.0.0.0, Culture=neutral,
-          PublicKeyToken=null
+        m_SerializableType: UnityEngine.Mesh, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
       m_SerializableObject: '{"obj":{"fileID":10207,"guid":"0000000000000000e000000000000000","type":0}}'
     m_Space: -1
   m_Property:
     name: mesh
     m_serializedType:
-      m_SerializableType: UnityEngine.Mesh, UnityEngine.CoreModule, Version=4.0.0.0, Culture=neutral,
-        PublicKeyToken=null
+      m_SerializableType: UnityEngine.Mesh, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
   m_Direction: 0
   m_LinkedSlots:
   - {fileID: 8926484042661620059}
@@ -18217,8 +18241,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c52d920e7fff73b498050a6b3c4404ca, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18251,8 +18275,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18285,8 +18309,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08b03824843e33840a03794c433c3cef, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 114350483966674976}
   m_Children:
@@ -18342,15 +18366,27 @@ MonoBehaviour:
     m_PropertyNames: []
     m_PropertyValues: []
     renderQueue: -1
+  useMaskMap: 0
+  useNormalMap: 0
+  useEmissiveMap: 0
   colorMode: 1
   useEmissive: 0
   materialType: 0
   onlyAmbientLighting: 0
-  receiveShadows: 1
+  diffusionProfileAsset: {fileID: 0}
+  multiplyThicknessWithAlpha: 0
+  doubleSided: 0
+  preserveSpecularLighting: 0
   enableSpecular: 1
+  lightmapRemapMode: 0
+  lightmapRemapRanges: 0
+  useAlphaRemap: 0
+  emissiveMode: 0
+  useEmissiveChannelScale: 0
+  useColorAbsorption: 1
+  receiveShadows: 1
   enableCookie: 1
   enableEnvLight: 1
-  doubleSided: 0
 --- !u!114 &8926484042661620041
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18361,8 +18397,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45fdf0bbbd1d59d4e883e734442050d7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620040}
   m_Children: []
@@ -18390,8 +18426,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5ff4abdfc4ddb54992e15a0636f5d0e, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18405,7 +18441,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.GraphicsBuffer, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject:
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: Buffer
@@ -18425,8 +18461,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5265657162cc1a241bba03a3b0476d99, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children:
@@ -18461,8 +18497,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac39bd03fca81b849929b9c966f1836a, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620043}
   m_Children:
@@ -18477,8 +18513,8 @@ MonoBehaviour:
     m_Owner: {fileID: 0}
     m_Value:
       m_Type:
-        m_SerializableType:
-      m_SerializableObject:
+        m_SerializableType: 
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: position
@@ -18497,8 +18533,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620044}
   m_Children: []
@@ -18510,8 +18546,8 @@ MonoBehaviour:
     m_Owner: {fileID: 0}
     m_Value:
       m_Type:
-        m_SerializableType:
-      m_SerializableObject:
+        m_SerializableType: 
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: x
@@ -18530,8 +18566,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620044}
   m_Children: []
@@ -18543,8 +18579,8 @@ MonoBehaviour:
     m_Owner: {fileID: 0}
     m_Value:
       m_Type:
-        m_SerializableType:
-      m_SerializableObject:
+        m_SerializableType: 
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: y
@@ -18563,8 +18599,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 8926484042661620044}
   m_Children: []
@@ -18576,8 +18612,8 @@ MonoBehaviour:
     m_Owner: {fileID: 0}
     m_Value:
       m_Type:
-        m_SerializableType:
-      m_SerializableObject:
+        m_SerializableType: 
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: z
@@ -18596,8 +18632,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d246e354feb93041a837a9ef59437cb, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18630,8 +18666,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76f778ff57c4e8145b9681fe3268d8e9, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18665,8 +18701,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76f778ff57c4e8145b9681fe3268d8e9, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18700,7 +18736,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5ff4abdfc4ddb54992e15a0636f5d0e, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.VisualEffectGraph.Editor::UnityEditor.VFX.VFXSlotGraphicsBuffer
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
@@ -18715,7 +18751,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.GraphicsBuffer, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject:
+      m_SerializableObject: 
     m_Space: -1
   m_Property:
     name: Buffer 1
@@ -18734,8 +18770,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4c11ff25089a324daf359f4b0629b33, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18768,8 +18804,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 081ffb0090424ba4cb05370a42ead6b9, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18788,8 +18824,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18822,8 +18858,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f780aa281814f9842a7c076d436932e7, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18856,8 +18892,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 330e0fca1717dde4aaa144f48232aa64, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 114350483966674976}
   m_Children: []
@@ -18869,20 +18905,20 @@ MonoBehaviour:
   - {fileID: 8926484042661620059}
   m_ExposedName: Particle Mesh
   m_Exposed: 1
-  m_Order: 6
+  m_Order: 0
   m_Category: Orb
   m_Min:
     m_Type:
-      m_SerializableType:
-    m_SerializableObject:
+      m_SerializableType: 
+    m_SerializableObject: 
   m_Max:
     m_Type:
-      m_SerializableType:
-    m_SerializableObject:
+      m_SerializableType: 
+    m_SerializableObject: 
   m_IsOutput: 0
   m_EnumValues: []
   m_ValueFilter: 0
-  m_Tooltip:
+  m_Tooltip: 
   m_Nodes:
   - m_Id: 0
     linkedSlots:
@@ -18902,8 +18938,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b47b8679b468b7347a00cdd50589bc9f, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
   m_Parent: {fileID: 0}
   m_Children: []
@@ -18915,15 +18951,15 @@ MonoBehaviour:
     m_Owner: {fileID: 8926484042661620058}
     m_Value:
       m_Type:
-        m_SerializableType: UnityEngine.Mesh, UnityEngine.CoreModule, Version=4.0.0.0, Culture=neutral,
-          PublicKeyToken=null
+        m_SerializableType: UnityEngine.Mesh, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
       m_SerializableObject: '{"obj":{"fileID":10207,"guid":"0000000000000000e000000000000000","type":0}}'
     m_Space: -1
   m_Property:
     name: Particle Mesh
     m_serializedType:
-      m_SerializableType: UnityEngine.Mesh, UnityEngine.CoreModule, Version=4.0.0.0, Culture=neutral,
-        PublicKeyToken=null
+      m_SerializableType: UnityEngine.Mesh, UnityEngine.CoreModule, Version=0.0.0.0,
+        Culture=neutral, PublicKeyToken=null
   m_Direction: 1
   m_LinkedSlots:
   - {fileID: 8926484042661620037}

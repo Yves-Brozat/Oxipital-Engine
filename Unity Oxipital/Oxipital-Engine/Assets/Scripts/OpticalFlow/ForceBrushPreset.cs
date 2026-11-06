@@ -38,6 +38,17 @@ namespace Oxipital
             }
         }
 
+        public void RestoreFields(StandardForceGroup group, params string[] names)
+        {
+            foreach (var value in parameters)
+            {
+                if (Array.IndexOf(names, value.field) < 0) continue;
+                var field = typeof(StandardForceGroup).GetField(value.field, BindingFlags.Public | BindingFlags.Instance);
+                if (field?.FieldType == typeof(float)) field.SetValue(group, value.number);
+                else if (field?.FieldType == typeof(Vector3)) field.SetValue(group, value.vector);
+            }
+        }
+
         public void Set(string field, float number)
         {
             for (int i = 0; i < parameters.Count; i++)

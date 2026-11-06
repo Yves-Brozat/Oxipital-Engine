@@ -928,7 +928,7 @@ namespace OSCQuery
 					builder.Append(str);
 					break;
 				case Type.STRING:
-					builder.AppendFormat("\"{0}\"", str);
+					AppendQuotedString(builder, str);
 					break;
 				case Type.NUMBER:
 					if (useInt)
@@ -980,7 +980,8 @@ namespace OSCQuery
 									for (int j = 0; j < depth; j++)
 										builder.Append("\t"); //for a bit more readability
 #endif
-								builder.AppendFormat("\"{0}\":", key);
+								AppendQuotedString(builder, key);
+								builder.Append(':');
 								foreach (IEnumerable e in obj.StringifyAsync(depth, builder, pretty))
 									yield return e;
 								builder.Append(",");
@@ -1069,6 +1070,32 @@ namespace OSCQuery
 		 * method is duplicated.  Hopefully there won't be too many future changes, but
 		 * I would still like a more elegant way to optionaly yield
 		 */
+		// OSCQuery includes user strings such as Windows file paths. Both
+		// serialization paths must escape values and keys according to JSON.
+		static void AppendQuotedString(StringBuilder builder, string value)
+		{
+			builder.Append('"');
+			if (value != null)
+				foreach (char c in value)
+				{
+					switch (c)
+					{
+						case '"': builder.Append("\\\""); break;
+						case '\\': builder.Append("\\\\"); break;
+						case '\b': builder.Append("\\b"); break;
+						case '\f': builder.Append("\\f"); break;
+						case '\n': builder.Append("\\n"); break;
+						case '\r': builder.Append("\\r"); break;
+						case '\t': builder.Append("\\t"); break;
+						default:
+							if (c < 0x20) builder.Append("\\u").Append(((int)c).ToString("x4", CultureInfo.InvariantCulture));
+							else builder.Append(c);
+							break;
+					}
+				}
+			builder.Append('"');
+		}
+
 		void Stringify(int depth, StringBuilder builder, bool pretty = false)
 		{   //Convert the JSONObject into a string
 			//Profiler.BeginSample("JSONprint");
@@ -1088,7 +1115,7 @@ namespace OSCQuery
 					builder.Append(str);
 					break;
 				case Type.STRING:
-					builder.AppendFormat("\"{0}\"", str);
+					AppendQuotedString(builder, str);
 					break;
 				case Type.NUMBER:
 					if (useInt)
@@ -1141,7 +1168,8 @@ namespace OSCQuery
 									for (int j = 0; j < depth; j++)
 										builder.Append("\t"); //for a bit more readability
 #endif
-								builder.AppendFormat("\"{0}\":", key);
+								AppendQuotedString(builder, key);
+								builder.Append(':');
 								obj.Stringify(depth, builder, pretty);
 								builder.Append(",");
 #if (PRETTY)
