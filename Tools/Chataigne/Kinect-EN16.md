@@ -586,3 +586,25 @@ boutons de scène rappellent immédiatement `Tourbillon Background Off` sur Forc
 conservés. `Split-TourbillonForces.ps1` effectue cette séparation ;
 `Test-TourbillonForces.ps1` contrôle les réglages, les rappels et la préservation
 intégrale des données hors de ce changement.
+
+Les six relais de position Orb/Force vers les valeurs finales Quest doivent
+aussi avoir `sendOnInputChangeOnly = false`, `sendOnOutputChangeOnly = false`
+`sendOnActivate = true`, `sendAfterLoad = true` et
+`forceContinuousProcess = true`. Une position de preset inchangée, notamment zéro,
+doit réactualiser la valeur intermédiaire même si un filtre de mode vient
+d'autoriser le relais ou si la session démarre avec une valeur calculée périmée.
+`Repair-PositionRelayInitialization.ps1` applique ces options ; son test compare
+le projet entier après annulation de ces seules modifications, en préservant
+les presets et les conditions de routage. Les relais écrivent dans des CV
+Chataigne : cette correction n'ajoute pas d'envoi OSC forcé en boucle ni de
+recentrage après la transition. Le traitement continu est local aux six relais
+de CV. Définir `updateRate` ne suffit pas : dans le code natif de
+[Mapping::checkFiltersNeedContinuousProcess](https://github.com/benkuper/Chataigne/blob/master/Source/Common/Processor/Mapping/Mapping.cpp),
+la fréquence n'est activée qu'en présence d'un filtre continu, d'un mode Timer
+ou de `forceContinuousProcess`. Les premiers réglages d'envoi seuls n'avaient
+donc pas corrigé le démarrage de Tornade ; cette vérification native a permis
+d'identifier l'option de traitement manquante.
+
+Après installation de cette option, OSCQuery a confirmé Force Group 1 à
+`(0, 0, 0)` dans Tornade, avec `controlForcePosition = false`, alors que la
+lecture précédente conservait `(0.40155, 1.109755, -0.02696748)`.
