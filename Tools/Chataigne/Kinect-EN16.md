@@ -608,3 +608,57 @@ d'identifier l'option de traitement manquante.
 Après installation de cette option, OSCQuery a confirmé Force Group 1 à
 `(0, 0, 0)` dans Tornade, avec `controlForcePosition = false`, alors que la
 lecture précédente conservait `(0.40155, 1.109755, -0.02696748)`.
+
+### Couleur globale des LED Kinect
+
+Dans la session Synchronized, le sélecteur du dashboard conserve une couleur
+commune aux scènes : les 11 presets Kinect ignorent `en16LEDColor` avec le mode
+natif `None`, comme pour la banque EN16. Le rappel et la mise à jour des valeurs
+de ces presets préservent ce mode. La couleur courante reste enregistrée dans
+la session Chataigne. Pour un nouveau preset, conserver également ce mode.
+`Set-KinectLEDColorGlobal.ps1` applique cette exclusion à un fichier de session ;
+`Test-KinectLEDColorGlobal.ps1` vérifie les modes et compare tout le reste du
+projet au fichier source. Recharger la session modifiée pour l'appliquer.
+
+### Sauvegarde coordonnée des presets
+
+Le dashboard **Abysses** remplace **Leap to force** par **Save**. Saisir un nom
+dans **Nouveau preset**, puis cliquer **Save** crée un preset de ce nom dans
+**Force 1**, **Orb1** et **Kinect** à partir des CV courantes. Une action de rappel
+dans **Presets** et une action de mise à jour dans **Save Presets** sont créées
+en même temps. Le nouveau trio est sélectionné dans **Preset a mettre a jour**.
+Pour le remplacer par les réglages courants, cliquer **Update**. Le sélecteur
+est explicite : il ne suit pas automatiquement les anciens boutons de spectacle.
+
+L'état **Save Presets** contient aussi 13 triggers **Update ...** pour les scènes
+existantes et leurs étapes Init/End. Ils capturent les trois groupes sans rappeler
+la scène. Les étapes Init et End de Montée des eaux partagent leur preset Kinect ;
+il en va de même pour Descente plane. **Descente (Montee des eaux End)** utilise
+les mêmes presets Force/Orb que Montée des eaux End : mettre à jour l'une de ces
+cibles change donc leurs valeurs communes. Les autres groupes, dont Force 2,
+restent hors de cette sauvegarde à trois groupes.
+
+Les noms vides, doublons et collisions d'adresses sont refusés. Les trois cibles
+sont vérifiées avant toute mise à jour ; une transition en cours bloque la capture.
+Une création incomplète est retirée si un preset ou une action ne peut être créé.
+Le script ne sauvegarde rien à son chargement. Après une capture réussie, l'action
+native **Save Session** enregistre le fichier courant ; consulter le journal
+Chataigne en cas d'erreur d'écriture. Le statut indique que cet enregistrement a
+été demandé, sans prétendre confirmer son succès sur disque.
+
+Les nouveaux presets et ceux mis à jour ignorent les variables `en16*` en mode
+`None` : couleur, banque et états des entrées MIDI restent globaux. Les modes
+d'interpolation des réglages artistiques existants sont conservés. Pour capturer
+des modifications faites dans Unity, utiliser **Edition Unity** et vérifier que
+les CV ont reçu les valeurs souhaitées avant Save/Update.
+
+`Add-PresetAuthoring.ps1` prépare la session et référence le script relatif
+`scripts/PresetAuthoring.js`, à distribuer avec le fichier `.noisette`.
+`Test-PresetAuthoring.ps1` vérifie les cibles et la conservation intégrale des
+données existantes. `Test-PresetAuthoring.js` teste les scénarios de création et
+mise à jour avec des doubles des API natives (managers, enums, presets et triggers).
+Les schémas viennent des implémentations officielles de
+[GenericScriptCommand](https://github.com/benkuper/Chataigne/blob/master/Source/Module/modules/generic/commands/GenericScriptCommand.cpp),
+[CVPreset](https://github.com/benkuper/Chataigne/blob/master/Source/CustomVariables/Preset/CVPreset.cpp)
+et [BaseManager](https://github.com/benkuper/juce_organicui/blob/master/manager/BaseManager.h).
+Recharger la session Synchronized pour afficher les nouveaux contrôles.
