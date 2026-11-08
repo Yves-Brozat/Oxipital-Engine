@@ -49,7 +49,7 @@ function setup(){
                 if(item.shortName=="newPresetName")fixtureName=c;
                 if(item.shortName=="status")fixtureStatus=c;
             }
-        } else if(key=="force1"||key=="orb1"||key=="kinect"){
+        } else if(key=="force1"||key=="orb1"||key=="force2"||key=="orb2"||key=="kinect"){
             var node=cv.add(new Node(key));groupNodes[key]=node;
             node.live={position:[1,2,3],intensity:17};
             if(key=="kinect")node.live={strength:2,brushEnabled:true,en16KinectBank:true,en16LEDColor:[0,0,1,1],en16Button1:false};
@@ -101,7 +101,16 @@ for(var i=0;i<3;i++)check(same(resolve(created.targets[i]).stored,groupNodes[["f
 check(resolve("/states/presets/processors/essailive")!=null,"No recall action");
 check(resolve("/states/savePresets/processors/updateessailive")!=null,"No update action");
 var recall=resolve("/states/presets/processors/essailive").data.consequences.items;
-check(recall[0].command.parameters[0].value=="/force1/presets/essailive","Wrong native recall address");
+var hasRecall=false,hasRelease=false;
+for(var r=0;r<recall.length;r++){
+    var params=recall[r].command.parameters;
+    for(var v=0;v<params.length;v++){
+        if(params[v].value=="/force1/presets/essailive")hasRecall=true;
+        if(params[v].value=="/orb2/presets/transitionRelease")hasRelease=true;
+    }
+}
+check(hasRecall,"Wrong native recall address");
+if(resolve("/customVariables/orb2/presets/transitionRelease")!=null)check(hasRelease,"New scene lacks outgoing crossfade");
 groupNodes.force1.live.intensity=99;run("update");check(saves==2&&resolve(created.targets[0]).stored.intensity==99,"Update selected failed");
 fixtureName.set("Essai-live");var before=counts();run("create");check(saves==2&&same(before,counts()),"Address collision wrote data");
 fixtureName.set("Essai live");run("create");check(saves==2,"Duplicate name was accepted");
@@ -111,6 +120,12 @@ reset();fixtureName.set(" ");run("create");check(saves==0,"Blank name accepted")
 reset();fixtureName.set("Partial");child(groupNodes.orb1,"presets").refuse=true;before=counts();run("create");check(saves==0&&same(before,counts()),"Partial preset creation was not rolled back");
 reset();fixtureName.set("Partial");resolve("/states/savePresets/processors").refuse=true;before=counts();run("create");check(saves==0&&same(before,counts())&&resolve("/states/presets/processors/partial")==null,"Action creation failure left partial data");
 reset();var entry=fixtureSelector.get();var missing=resolve(entry.targets[2]);child(groupNodes.kinect,"presets").removeItem(missing);before=counts();run("update");check(saves==0&&same(before,counts()),"Missing third preset caused partial update");
-reset();groupNodes.force1.controls[0].set(.5);before=counts();run("update");check(saves==0&&same(before,counts()),"Saved during interpolation");
+reset();fixtureSelector.set("Meduse");groupNodes.force1.controls[0].set(.5);before=counts();run("update");check(saves==0&&same(before,counts()),"Saved during interpolation");
 reset();entryKey.set("notFound");run("updateEntry","notFound");check(saves==0,"Missing scene key accepted");
+if(resolve("/customVariables/orb2/presets/chute")!=null){
+    reset();groupNodes.orb2.controls[0].set(.5);run("updateEntry","chute");
+    check(saves==0,"Saved Chute during Orb2 interpolation");
+    reset();groupNodes.orb1.controls[0].set(.5);run("updateEntry","chute");
+    check(saves==1,"Unrelated Orb1 interpolation blocked Chute update");
+}
 WScript.Echo("PRESET_AUTHORING_JS_PASS: "+entries.length+" real scene trios; create/update/persistence, global LED/bank, collisions, rollback and preflight failures.");

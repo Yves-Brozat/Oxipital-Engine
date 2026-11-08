@@ -187,24 +187,24 @@ banque et reprennent lorsqu'elle est désactivée.
 | 1 | Orb Position |
 | 2 | Orb Radius |
 | 3 | Orb Orientation |
-| 4 | Two Hand Orbs |
+| 4 | EN16 Kinect Bank (dans les deux banques) |
 | 5 | Force Position |
 | 6 | Force Radius (contrôle existant intensité/rayon) |
 | 7 | Force Orientation |
-| 8 | Two Hands Forces |
-| 9 | Reset Camera |
-| 10 | Sync Data |
+| 8 | Reset Camera |
+| 9 | Two Hand Orbs |
+| 10 | Two Hands Forces |
 | 11 | Invert Gesture Intensity |
-| 12 | Single Hand Only |
+| 12 | Sync Data |
 | 13 | Kinect Enabled |
 | 14 | Show Monitor |
 | 15 | Use Target Depth |
-| 16 | EN16 Kinect Bank (dans les deux banques) |
+| 16 | Single Hand Only |
 
-Le bouton 8 **Two Hands Forces** est disponible sur le dashboard Kinect
+Le bouton 10 **Two Hands Forces** est disponible sur le dashboard Kinect
 et les appuis EN16 de cette banque. Il duplique la force sélectionnée et place
 chaque source sur une main, avec des paramètres partagés. **Force Position**
-doit être activé. Le bouton 12 **Single Hand Only** remplace le raccourci Méduses
+doit être activé. Le bouton 16 **Single Hand Only** remplace le raccourci Méduses
 uniquement dans cette banque. Activé, il garde la première main suivie puis
 passe à l'autre si elle est perdue ; désactivé, les deux mains sont actives.
 Il agit seulement sur les groupes en mode Two Hand Orbs ou Two Hands Forces.
@@ -662,3 +662,337 @@ Les schémas viennent des implémentations officielles de
 [CVPreset](https://github.com/benkuper/Chataigne/blob/master/Source/CustomVariables/Preset/CVPreset.cpp)
 et [BaseManager](https://github.com/benkuper/juce_organicui/blob/master/manager/BaseManager.h).
 Recharger la session Synchronized pour afficher les nouveaux contrôles.
+
+## Morph Tornade sur la timeline
+
+Dans la séquence **Tornade**, la piste **Morph Tornade - Start vers Tornade**
+utilise une seule automation de 0 à 1 pour interpoler simultanément les presets
+Force 1, Orb1 et Kinect. Les presets sauvegardés restent les sources : une mise
+à jour de « Tornade - Start » ou de « Tornade » est utilisée par la piste.
+
+L'événement **Init - Tornade Start** à 0,05 s arrête les anciens morphs temporisés,
+charge les trois presets Start et conserve les autres commandes d'initialisation.
+La rampe linéaire commence à 0,10 s et atteint 1 à 70,10 s, soit 70 secondes de
+morph. La séquence dure désormais 75 secondes pour laisser le morph se terminer.
+
+Pour changer la durée, déplacer horizontalement la clé **Tornade - 100 pour cent**
+sur la piste : durée = temps de cette clé moins temps de la clé Start. Garder
+les valeurs verticales à 0 et 1. Déplacer les deux clés pour décaler le morph ;
+placer le début après l'événement Init. Allonger aussi la séquence si la clé de
+fin doit dépasser sa durée. La courbe peut être éditée pour modifier l'accélération.
+Les trois groupes suivent la même courbe et l'option **Send On Seek** permet
+d'appliquer la valeur correspondant à la position du curseur.
+
+Les modes d'interpolation des presets sont conservés : les valeurs continues
+évoluent selon leur mode natif, les interrupteurs restent discrets et les entrées
+marquées `None` sont ignorées. Les commandes `Go to preset` indépendantes ont été
+retirées de cet événement pour éviter qu'elles concurrencent la timeline.
+
+`Add-TornadeTimelineMorph.ps1` prépare une copie ; `Test-TornadeTimelineMorph.ps1`
+vérifie les trois paires, leurs liens à la courbe, la durée et la conservation de
+toute la session hors de la séquence Tornade. Le schéma utilise la commande native
+[Interpolate presets](https://github.com/benkuper/Chataigne/blob/master/Source/Module/modules/customvariables/commands/CustomVariablesModuleCommands.cpp)
+et la piste native
+[MappingLayer](https://github.com/benkuper/Chataigne/blob/master/Source/TimeMachine/Sequence/layers/mapping/MappingLayer.cpp).
+
+## Boutons des scènes EN16 et conduite
+
+Les boutons des scènes de la banque Abysses lancent désormais les cues de
+**Conduite > Conductor**, avec lecture de la séquence depuis son début :
+
+| Bouton EN16 | Séquence |
+| --- | --- |
+| 5 | Tornade |
+| 9 | Cascade |
+| 10 | Tourbillon |
+| 11 | Cercle |
+| 14 | Chute |
+| 15 | Meduse |
+
+Les actions **Conduite > EN16 - ...** reçoivent les entrées virtuelles isolées
+de la banque Abysses et déclenchent uniquement la cue correspondante. Les mêmes
+boutons du dashboard Abysses ciblent directement ces cues. Le bouton autrefois
+étiqueté Bulle devient Cercle, conformément à sa cible et à la conduite.
+
+Les anciennes conditions EN16 de ces scènes dans **Presets** sont retirées,
+y compris celles des variantes Bulle, Cascade end et Descente qui partageaient
+les mêmes boutons. Les commandes de rappel manuel restent disponibles dans
+**Presets** pour travailler les presets. Elles ne se déclenchent plus sur ces
+appuis physiques. Les scènes sans séquence, notamment Montée des eaux, conservent
+leur fonctionnement existant.
+
+Ainsi le bouton Tornade ne rappelle plus directement les presets finaux : il
+lance la séquence, son initialisation Start puis son automation de morph.
+Les séquences, leurs durées, les presets et les autres commandes EN16 sont
+conservés à l'identique par `Route-EN16ScenesToConduite.ps1`.
+`Test-EN16ConduiteRouting.ps1` vérifie l'unicité des abonnements, les conditions
+d'appui positif, les liens des deux dashboards et la conservation des données.
+
+## Morph Cascade sur la timeline
+
+La séquence **Cascade** utilise également une piste **Morph Cascade - Start vers
+Cascade** commune à Force 1, Orb1 et Kinect. **Init - Cascade Start** charge leurs
+presets `cascadeStart` à 0,05 s ; la rampe va de 0 à 1 entre 0,10 et 4,10 s.
+La durée initiale de 4 secondes reprend la transition Cascade existante et la
+séquence reste à 60 secondes. Déplacer la clé finale à 1 pour ajuster la durée,
+comme pour Tornade. Les anciens rappels finaux dans l'initialisation sont retirés.
+L'EN16 (bouton 9) et le dashboard continuent de lancer cette séquence via la conduite.
+
+La préparation et la vérification réutilisent `Add-TornadeTimelineMorph.ps1`
+avec `-Scene Cascade -MorphDuration 4`, et `Test-TornadeTimelineMorph.ps1`
+avec `-Scene Cascade`. Les presets, la séquence Tornade et le routage sont conservés.
+
+## Grille Abysses et EN16 : disposition actuelle
+
+`Remap-AbyssesButtons.ps1` remplace les anciens abonnements directs des boutons
+Abysses par un routage unique dans **Conduite > EN16 Abysses ...**. La grille de
+droite du dashboard se lit de gauche à droite, puis de haut en bas :
+
+| Bouton | Action |
+| --- | --- |
+| 1 | Launch All |
+| 2 | Init conduite |
+| 3 | Previous conduite |
+| 4 | Bank Kinect |
+| 5 | Meduse |
+| 6 | Cascade |
+| 7 | Tornade |
+| 8 | Reset caméra |
+| 9 | Chute |
+| 10 | Tourbillon |
+| 11 | Cercle |
+| 12 | Sync |
+| 13 | Next conduite |
+| 14 | In/out radial |
+| 15 | 180Z |
+| 16 | Explosion |
+
+Previous appelle **Conductor > Trigger Previous** ; Init arrête les six séquences
+et relance la conduite depuis Méduse, avec Chute comme prochain Next. Next garde
+sa commande existante. Les six scènes lancent les cues et leurs séquences, avec
+leurs morphs. Bank reste réservé au changement de banque dans les deux modes.
+La banque Kinect conserve sa propre disposition.
+
+Save est placé à droite de la grille, sans entrée EN16. Update, le nom et la
+sélection des presets restent disponibles. Launch Oxipital, Leap to orb et Montée
+sont retirés du dashboard. Les commandes manuelles restent dans leurs states,
+avec leurs anciens abonnements aux boutons Abysses retirés pour éviter les
+déclenchements simultanés (notamment les anciennes actions Leap du bouton 12).
+
+`Test-AbyssesButtonRemap.ps1` vérifie les seize cibles, leur position, l'unicité
+des entrées physiques et la conservation des presets, séquences, commandes
+manuelles, retours LED et contrôles Kinect.
+
+## Arrivée Chute sur dix secondes
+
+**Chute - Start** (`chuteStart`) copie le preset Chute de Force 1, Orb1 et Kinect.
+Seules l'intensité globale Force 1 (`intensity`) et l'intensité d'émission Orb1
+(`dancerIntensity`) sont mises à zéro ; le preset Kinect est identique à Chute.
+Les destinations Chute existantes restent intactes.
+
+Dans la séquence Chute, **Init - Chute Start** charge les trois presets Start à
+0,05 s. La piste **Morph Chute - Start vers Chute** passe de 0 à 1 entre 0,10 s
+et 10,10 s : dix secondes de morph commun, puis maintien du preset final. Les
+anciens rappels finaux concurrents sont retirés de l'initialisation. La séquence
+reste à 60 secondes et son déclenchement via la conduite/EN16 reste identique.
+Déplacer la clé finale à 1 pour changer la durée, comme pour Cascade et Tornade.
+
+Le trio Start figure dans le sélecteur Save/Update et possède ses actions de
+rappel et de mise à jour. `Add-ChuteStartPreset.ps1` prépare les clones et leurs
+entrées d'édition ; `Add-TornadeTimelineMorph.ps1 -Scene Chute -MorphDuration 10`
+ajoute la piste. `Test-ChuteStartTransition.ps1` vérifie les différences exactes
+des presets et la conservation des données existantes ; le test de morph commun
+accepte également `-Scene Chute`.
+
+## Ancienne approche par pages natives (remplacée)
+
+Cette approche est remplacée par les trois banques logicielles décrites plus bas.
+Ne plus ajouter de notification CC115 ni utiliser les pages 2 à 4 pour ce projet.
+
+La page native 1 affiche Abysses ou Abysses Kinect selon la banque logicielle.
+La page native 2 affiche AbyssesFluides. Les pages 3 et 4 ne changent pas le
+dashboard. La banque Kinect ne remplace pas le dashboard Fluides tant que la
+page native 2 est active ; au retour sur la page 1, la banque Kinect est retrouvée.
+
+Le contrôleur doit annoncer la page active. Dans **Grid Editor > System > Init**,
+ajouter cette ligne à la fin du code existant sur les pages natives **1 et 2**,
+puis sauvegarder chaque page sur le contrôleur (**Store**) :
+
+```lua
+gms(15,176,115,gpc())
+```
+
+Cette ligne envoie le CC115 du canal MIDI 16, valeur 0 pour la première page et
+1 pour la deuxième. Ne pas remplacer les autres instructions d'Init. Le fichier
+`Chataigne/EN16/EN16 Page Dashboard Notify.lua` contient la ligne ; la copie
+`EN16 Abysses - Kinect LEDs v6 Dashboard.json` la contient déjà pour le profil
+de la première page, avec ses autres réglages conservés. Le profil de la page
+Fluides doit recevoir seulement cette ligne pour préserver ses réglages propres.
+Les pages natives sans notification ne sont pas détectées au seul appui latéral.
+
+`Add-EN16DashboardSwitching.ps1` ajoute les actions et la réception CC115.
+`scripts/EN16Dashboard.js` choisit la page et la banque. Chaque action restaure
+Chataigne, sélectionne le dashboard (y compris pour les clients) puis utilise
+**OS > Window > Set Window Parameters**, Bring to top activé, après 0,2 seconde.
+Le titre doit commencer par `Chataigne ` ; position, taille et décoration sont
+laissées inchangées. Le passage au premier plan utilise le mécanisme natif Windows
+de Chataigne et doit être vérifié avec les fenêtres du poste en conditions réelles.
+
+`Test-EN16Dashboard.js` teste la matrice page/banque, le retour depuis Fluides,
+les pages ignorées et l'absence de déclenchement au chargement du script.
+
+## Trois banques logicielles : configuration actuelle
+
+Sur la seule **page native 1** de l'EN16, le bouton **4 Bank** parcourt :
+**Abysses → Kinect → AbyssesFluides → Abysses**. Le même bouton existe dans les
+trois dashboards. Le changement sélectionne le dashboard et demande la mise au
+premier plan de Chataigne. Le bouton Bank est toujours orange, indépendamment
+des couleurs des deux banques supplémentaires.
+
+Charger le profil **EN16 Abysses - Three Banks v9** sur la page native **1**, puis
+faire **Store** dans Grid Editor. Le profil est livré dans `Chataigne/EN16` et
+copié dans le dossier des profils locaux de Grid Editor. Il conserve les messages
+MIDI des seize encodeurs et boutons. Son bouton latéral ne charge plus d'autre
+page. Aucune notification de page CC115 n'est nécessaire.
+
+`en16Banks > Bank` est l'autorité : 0 = Abysses, 1 = Kinect, 2 = Fluides.
+Les trois routeurs de boutons sont exclusifs et ne rejouent pas de valeurs à
+l'activation. À chaque transition, les 48 entrées virtuelles sont remises à zéro
+avant le prochain événement physique. L'ancien `EN16 Kinect Bank` devient un
+retour compatible en lecture seule, vrai uniquement dans la banque Kinect.
+Les scènes, presets, morphs et commandes de conduite restent inchangés.
+
+La banque Fluides reprend les gains et cibles de l'ancienne page native 2 :
+
+| Encodeur | Paramètre Fluides |
+| --- | --- |
+| 1 | Contrast |
+| 2 | Brightness |
+| 3 | Saturation |
+| 4 | Flow Scale |
+| 5 | Timestep |
+| 6 | Density |
+| 7 | Velocity |
+| 8 | Couleur bleue |
+| 12 | Couleur rouge |
+| 16 | Couleur verte |
+
+Les encodeurs 9, 10, 11, 13, 14 et 15 restent libres dans cette banque.
+
+| Bouton | Action Fluides |
+| --- | --- |
+| 1 | Afficher/masquer le fluide |
+| 2 | Freeze |
+| 3 | Defreeze |
+| 4 | Banque suivante |
+| 5 | Launch Fluides |
+| 8 | Afficher/masquer les particules |
+| 12 | Afficher/masquer la source |
+| 13 | Preset initial |
+| 14 | Preset Particle |
+| 15 | Preset Color |
+| 16 | Mode caméra/couleur |
+
+Les autres boutons sont libres. L'ancien affichage fluide du bouton 4 passe en
+1. Le preset Little Volute reste dans son état désactivé d'origine et séparé
+visuellement du preset Particle. La grille Fluides est numérotée dans l'ordre
+physique, de gauche à droite puis de haut en bas.
+
+**Couleur LED Fluides** règle une couleur globale dédiée (cyan par défaut),
+comme **Couleur LED Kinect**. Elle n'entre pas dans les presets artistiques.
+Les deux flux RGB alimentent des mémoires distinctes et sont rafraîchis une fois par seconde.
+Canal MIDI 16 : CC116/117/118 = RGB Kinect, CC112/113/114 = RGB Fluides (0..127), CC119 = banque (0/1/2).
+Le profil v9 applique la couleur orange fixe `(255,100,0)` aux deux couches LED
+de l'élément matériel 15 : c'est le bouton 4 de la grille physique (note 47).
+Abysses conserve ses couleurs automatiques sur les autres éléments.
+
+`Add-EN16ThreeBanks.ps1` et `scripts/EN16Banks.js` préparent le routage et le
+cycle ; `Add-EN16ThreeBankProfile.ps1` produit le profil Grid. Les tests
+`Test-EN16ThreeBanks.ps1` et `Test-EN16Banks.js` vérifient les portes exclusives,
+les transitions et la conservation des données. `Test-EN16ThreeBankProfile.js`
+exécute le Lua avec le décodeur réel du firmware v1.5.0 et vérifie les trois
+banques, les couleurs, le Bank orange après manipulation et le bouton latéral.
+
+### Correction du chargement Grid Editor (profil v8)
+
+Le v7 passait les tests du Lua brut, mais échouait à l'import : la version de
+Grid Editor installée retire les retours à la ligne sans ajouter de séparateur
+(`GridAction.parse`), ce qui fusionnait des mots du setup. Le commentaire court
+placé dans l'événement Utility masquait aussi le `end` ajouté par le firmware
+pour fermer sa fonction d'événement. Ces deux erreurs ont été reproduites avant
+la correction.
+
+Le v8 exporte le setup sur une seule ligne avec des espaces explicites et utilise
+`do end` comme événement Utility inactif. Le générateur vérifie également la
+limite de 909 octets du firmware, enveloppe de transport comprise. Le test de
+profil applique maintenant la transformation de l'éditeur puis l'enveloppe de
+fonction du firmware avant de compiler et exécuter le code. L'option
+`--expect-broken` reproduit les erreurs setup/utility du fichier v7 conservé.
+
+Dans Grid Editor, charger **EN16 Abysses - Three Banks v9** sur la page native 1,
+puis Store. Fermer l'overlay de chargement du v7 ; si le transfert reste bloqué,
+reconnecter l'EN16 avant de charger le v8. Le profil est ajouté aux profils locaux.
+### Couleurs indépendantes et sélection native du dashboard (v9)
+
+Le v9 utilise deux mémoires RGB dans l'EN16 : Kinect reçoit les CC116..118 et
+Fluides les CC112..114, sur le canal 16. Les mappings rafraîchissent chaque
+mémoire même si sa banque est inactive. Une modification d'une couleur inactive
+ne redessine pas les LED de la banque active ; un changement de banque retrouve
+immédiatement sa propre couleur. Abysses conserve sa palette automatique et le
+bouton 4 reste orange dans les trois cas. Les couleurs choisies dans la dernière
+sauvegarde sont conservées.
+
+L'appui Bank garde le petit script de cycle pour changer l'index. Les actions
+**EN16 Banks > Apply Bank 0/1/2** exécutent désormais des conséquences natives :
+effacer les 48 entrées virtuelles, mettre à jour le retour Kinect, puis déclencher
+**Dashboard > showEN16Abysses/Kinect/Fluides**. La sélection du dashboard ne dépend
+plus du parcours des objets de Chataigne dans le script d'application.
+
+`Repair-EN16BankColorsAndDashboards.ps1` prépare cette correction sur une session
+à trois banques ; le générateur des trois banques l'applique également.
+`Test-EN16BankColorDashboardRepair.js` exécute le script de cycle contre le graphe
+réel des actions du fichier préparé : neuf appuis sélectionnent chacun le bon
+dashboard, demandent le premier plan et préservent les deux couleurs.
+Le test Lua du profil inclut les modifications de couleurs inactives et plusieurs
+cycles, après le transport Grid Editor et l'enveloppe d'événement du firmware.
+Charger le profil v9 sur la page native 1, Store, puis recharger la session corrigée.
+### Afficher explicitement le dashboard et son onglet au premier plan
+
+La correction finale place **Select Dashboard** directement dans chaque action
+**EN16 Banks > Apply Bank 0/1/2** avec les cibles `/abysses`, `/abyssesKinect` et
+`/abyssesFluides`. Ces commandes ne passent plus par une référence vers une action
+intermédiaire. Après restauration de la fenêtre, la sélection du contenu est
+suivie de l'activation de l'onglet **Dashboard**, qui est distincte de ce choix.
+
+Le helper Windows `scripts/Focus-Chataigne.ps1` identifie le processus Chataigne
+par le titre de la session, restaure sa fenêtre et utilise les API de premier
+plan avec attachement temporaire des threads d'entrée. Il contrôle le PID de la
+fenêtre réellement au premier plan. Avec `-ShowDashboard`, il trouve l'onglet
+Dashboard via l'accessibilité Windows et ses onglets voisins, puis lui envoie
+un appui sans déplacer le curseur. Aucune position d'écran fixe n'est utilisée.
+Le helper est lancé avec PowerShell `-WindowStyle Hidden` à chaque appui Bank.
+
+`Repair-EN16DashboardForeground.ps1 -FocusScriptPath <chemin-live-du-helper>`
+prépare les trois actions et leurs anciennes actions d'affichage. Les générateurs
+`Add-EN16ThreeBanks.ps1` et `Repair-EN16BankColorsAndDashboards.ps1` acceptent aussi
+ce paramètre pour conserver la correction lors d'une reconstruction. Le fichier
+helper doit être copié à cet emplacement à côté des autres scripts de la session.
+
+Test réel sur le poste : PID Chataigne vérifié au premier plan ; passage de
+State Machine à Dashboard vérifié visuellement après lancement masqué du helper.
+Les tests du graphe de neuf appuis vérifient aussi les trois sélections explicites,
+la présence du helper masqué et la conservation des couleurs. Le profil EN16 v9
+ne change pas pour cette correction ; recharger seulement la session Chataigne.
+### Comportement actuel : changement de banque sans activation de fenêtre
+
+À la demande de l'utilisateur, Bank sélectionne uniquement le dashboard correspondant.
+Les commandes Open from Tray, Maximize Window, Set Window Parameters et le lancement
+du helper Focus-Chataigne ont été retirés des trois Apply Bank et de leurs trois
+anciennes actions d'affichage. Aucun helper de premier plan ou d'activation
+automatique de l'onglet n'est appelé par le projet. Le fullscreen et la fenêtre
+active sont laissés à l'utilisateur et aux applications d'affichage.
+
+Les générateurs n'ajoutent plus ces commandes ; l'ancien argument FocusScriptPath
+est accepté pour compatibilité et ne réactive pas le premier plan. Le profil Grid
+v9 reste valable. Le test des neuf appuis interdit les commandes de fenêtre et
+vérifie toujours le bon choix de dashboard, les entrées et les couleurs séparées.

@@ -1,31 +1,50 @@
-// Run with Windows Script Host: cscript //nologo Test-ConduiteInit.js <script>
+// cscript //nologo Test-ConduiteInit.js <ConduiteInit.js>
 var fso = new ActiveXObject("Scripting.FileSystemObject");
 var file = fso.OpenTextFile(WScript.Arguments(0), 1);
 var source = file.ReadAll(); file.Close();
-var calls = [], current = "", next = 1;
-function node(name, containers, controls) {
-    return {name: name, getContainers: function () { return containers || []; },
-        getControllables: function () { return controls || []; }};
-}
-function button(name, label) { return {name:name, trigger:function(){calls.push(label);}}; }
-var conductor = node("conductor", [], [
-    {name:"currentCueName", get:function(){return current;}},
-    {name:"nextCue", set:function(v){next=v;}}, button("trigger", "first")]);
+var calls = [], current = "", next = 1, restartSameCue = true;
 var keys = ["meduse", "chute", "cascade", "tornade", "tourbillon", "cercle"];
 var names = ["Meduse", "Chute", "Cascade", "Tornade", "Tourbillon", "Cercle"];
-var sequences=[];
-for(var i=0;i<keys.length;i++) sequences.push(node(keys[i], [], [button("stop",keys[i]+":stop"),button("play",keys[i]+":play")]));
-var root=node("root",[node("states",[node("conduite",[node("processors",[conductor])])]),node("sequences",sequences)]);
-var script={logWarning:function(message){calls.push("warning");}};
-function check(ok,message){if(!ok)throw new Error(message);}
-eval(source);
-check(calls.length===0,"Loading starts playback");
-next=4; trigger(); check(next===1 && calls.join(",")==="first","Cold Init must start Meduse");
-for(var j=0;j<names.length;j++){
-    calls=[];current=names[j];next=j+2;trigger();
-    check(calls.join(",")===keys[j]+":stop,"+keys[j]+":play","Wrong restart: "+names[j]);
-    check(next===j+2,"Init advances cue");
-    calls=[];trigger();check(calls.length===2,"Repeated Init must restart again");
+var playing = {}, positions = {}, starts = {};
+function node(name, containers, controls) {
+    return {name:name, getContainers:function(){return containers || [];},
+        getControllables:function(){return controls || [];}};
 }
-current="unknown";calls=[];trigger();check(calls.join(",")==="warning","Unknown cue must not restart another scene");
-WScript.Echo("PASS: no playback on load, cold Init, all six restarts, repeated Init and unchanged Next index.");
+function check(ok,message){if(!ok)throw new Error(message);}
+function start(key){playing[key]=true;positions[key]=0;starts[key]++;calls.push(key+":play");}
+function sequence(key){return node(key, [], [
+    {name:"stop",trigger:function(){playing[key]=false;calls.push(key+":stop");}},
+    {name:"play",trigger:function(){start(key);}},
+    {name:"isPlaying",get:function(){return playing[key];}}
+]);}
+var conductor=node("conductor",[],[
+    {name:"nextCue",set:function(v){next=v;}},
+    {name:"trigger",trigger:function(){
+        check(next===1,"Init did not select the first cue before triggering");
+        var wasFirst=current==="Meduse";current="Meduse";next=2;
+        if(!wasFirst || restartSameCue)start("meduse");
+    }}
+]);
+var sequences=[];
+for(var i=0;i<keys.length;i++)sequences.push(sequence(keys[i]));
+var root=node("root",[node("states",[node("conduite",[node("processors",[conductor])])]),node("sequences",sequences)]);
+eval(source);
+check(calls.length===0,"Loading the script starts playback");
+function scenario(cue,legacy){
+    current=cue;next=6;restartSameCue=!legacy;calls=[];
+    for(var i=0;i<keys.length;i++){playing[keys[i]]=true;positions[keys[i]]=35;starts[keys[i]]=0;}
+    trigger();
+    check(current==="Meduse" && next===2,"Init must restart the show and leave Chute next");
+    for(var j=0;j<keys.length;j++){
+        var key=keys[j];
+        check(calls[j]===key+":stop","All show timelines must stop before starting the first cue");
+        if(key==="meduse")check(positions[key]===0,"Meduse did not restart at time zero");
+        check(playing[key]===(key==="meduse"),"A previous timeline remains active: "+key);
+        check(starts[key]===(key==="meduse" ? 1 : 0),"Wrong or duplicate sequence start: "+key);
+    }
+}
+scenario("",false);
+for(var j=0;j<names.length;j++){scenario(names[j],false);scenario(names[j],true);}
+scenario("unknown",false);
+scenario("Meduse",true);scenario("Meduse",true);
+WScript.Echo("PASS: no playback on load; cold, every scene, repeated and legacy Init restart Meduse once at time zero; Chute next; other timelines stopped.");

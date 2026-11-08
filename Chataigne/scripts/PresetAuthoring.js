@@ -68,8 +68,9 @@ function kinectModes(preset) {
     return modes;
 }
 function protectModes(modes) { for (var i = 0; i < modes.length; i++) modes[i].set("None"); }
-function preflightGroups() {
-    var names = ["force1", "orb1", "kinect"], groups = [];
+function preflightGroups(names) {
+    if (names == null) names = ["force1", "orb1", "kinect"];
+    var groups = [];
     for (var i = 0; i < names.length; i++) {
         var group = resolve("/customVariables/" + names[i]);
         if (group == null || child(group, "presets") == null) { fail("Missing group " + names[i]); return null; }
@@ -81,8 +82,10 @@ function preflightGroups() {
 }
 function updateEntry(entry) {
     if (entry == null || entry.targets == null || entry.targets.length != 3) return fail("Choose a preset to update.");
-    if (preflightGroups() == null) return false;
-    var presets = [], updates = [], groupNames = ["force1", "orb1", "kinect"];
+    var second = entry.targets[0].indexOf("/customVariables/force2/presets/") == 0;
+    var groupNames = [second ? "force2" : "force1", second ? "orb2" : "orb1", "kinect"];
+    if (preflightGroups(groupNames) == null) return false;
+    var presets = [], updates = [];
     // Resolve all three targets before changing any stored values.
     for (var i = 0; i < 3; i++) {
         if (entry.targets[i].indexOf("/customVariables/" + groupNames[i] + "/presets/") != 0) return fail("Invalid group target.");
@@ -95,7 +98,7 @@ function updateEntry(entry) {
     for (var j = 0; j < 3; j++) updates[j].trigger();
     protectModes(modes);
     control("selectedPreset").set(entry.label);
-    control("status").set("Updated: " + entry.label + " (Force 1 / Orb 1 / Kinect). Session save requested.");
+    control("status").set("Updated: " + entry.label + " (" + groupNames[0] + " / " + groupNames[1] + " / Kinect). Session save requested.");
     return true;
 }
 function rollback(created) {
@@ -135,6 +138,20 @@ function createEntry() {
     if (modes == null) { fail("Missing Kinect exclusion modes."); return rollback(created); }
     protectModes(modes);
     var recalls = [];
+    // Sessions with the crossfade release presets also give newly created
+    // Orb1 scenes the same outgoing fade as the installed show actions.
+    if (resolve("/customVariables/orb2/presets/transitionRelease") != null &&
+        resolve("/customVariables/force2/presets/transitionRelease") != null) {
+        var timelines = ["meduse", "chute", "cascade", "tornade", "tourbillon", "cercle"];
+        for (var q = 0; q < timelines.length; q++) recalls.push(triggerConsequence("/sequences/" + timelines[q] + "/stop"));
+        var cancelGroups = ["orb1", "orb2", "force1", "force2", "kinect"];
+        for (var c = 0; c < cancelGroups.length; c++) recalls.push(consequence("Kill Go to preset", [
+            parameter("/targetGroup", "/" + cancelGroups[c])], "customVariables"));
+        var releaseGroups = ["orb2", "force2"];
+        for (var r = 0; r < releaseGroups.length; r++) recalls.push(consequence("Go to preset", [
+            parameter("/targetPreset", "/" + releaseGroups[r] + "/presets/transitionRelease"),
+            {controlAddress: "/interpolationTime", value: 10, enabled: true}], "customVariables"));
+    }
     for (var t = 0; t < 3; t++) recalls.push(consequence("Go to preset", [
         parameter("/targetPreset", entry.targets[t].substring(16, entry.targets[t].length)),
         {controlAddress: "/interpolationTime", value: 4, enabled: true}], "customVariables"));
